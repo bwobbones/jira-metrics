@@ -1,0 +1,14 @@
+<project name="MinHR" default="karma-e2e" basedir=".">
+
+  <target name="karma-e2e" description="Karma AngularJS e2e Tests">
+    <echo message="---------------------" />
+    <echo message="LOG Running e2e tests" />
+    <echo message="---------------------" />
+    <exec executable="node_modules/karma/bin/karma" output="report/output.txt" failonerror="true">
+      <arg value="start" />
+      <arg value="./config/karma-build-e2e.conf.js" />
+    </exec>
+    <echo message="Tests complete" />
+ </target>
+
+</project>
