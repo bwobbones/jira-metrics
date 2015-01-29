@@ -1,7 +1,7 @@
 div.container
   div.row-fluid
     div.col-md-12
-      div.table-responsive      
+      div.table-responsive
         table.table.table-striped.table-bordered
           thead
             tr
@@ -13,24 +13,24 @@ div.container
               th Predictability
               th Show People
               th Issue Count
-              th Bug Count              
-            tbody              
+              th Bug Count
+            tbody
               tr(ng-repeat="stat in stats")
                 td {{ stat.week }}
                 td
-                  throughput(id="{{stat.identifier}}")
+                  throughput(id="{{stat.identifier}}", ng-attr-width="80", ng-attr-height="50")
                 td {{ stat.people.length }}
                 td {{ stat.total }} / {{ stat.average}} / {{ stat.stddev }}
                 td {{ stat.productivity }}
                 td {{ stat.predictability }}
-                td 
+                td
                   div.col-md-2
                     button.btn.btn-default.btn-small(ng-click="isCollapsed = !isCollapsed") People
-                  div.col-md-10   
+                  div.col-md-10
                       p(ng-show="isCollapsed") {{ stat.people.join(',') }}
                 td {{ stat.issueCountPerWeek }}
-                td {{ stat.bugCount }}                 
-
+                td {{ stat.bugCount }}
+      throughput(id="{{stats[stats.length - 1].identifier}}", ng-attr-width="1000", ng-attr-height="300")
 
   div.row-fluid
     div.col-md-12
@@ -40,32 +40,32 @@ div.container
   div.row-fluid
     div.col-md-2
       button.btn.btn-default.btn-small(ng-click="sourceCollapsed = !sourceCollapsed") Source
-    div.col-md-10(ng-show="sourceCollapsed") 
+    div.col-md-10(ng-show="sourceCollapsed")
       h3 Source Data
       p Number of issues completed each week
-      div.table-responsive      
+      div.table-responsive
         table.table.table-striped.table-bordered
           thead
             tr
               th Start Date
               th Issues Completed
               th Source
-            tbody              
+            tbody
               tr(ng-repeat="key in weekBuckets")
                 td {{ key.startDate }}
                 td {{ key.issues.length }}
-                td 
+                td
                   div.col-md-2
                     button.btn.btn-default.btn-small(ng-click="issueCollapsed = !issueCollapsed") Issues
-                  div.col-md-10   
+                  div.col-md-10
                     div.table-responsive(ng-show="issueCollapsed")
                       table.table.table-striped.table-bordered.table-hover
                         thead
                           tr
                             th Key
                             th Issue Type
-                          tbody              
+                          tbody
                             tr(ng-repeat="issue in key.issues")
-                              td 
+                              td
                                 a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}') {{ issue.key }}
                               td {{ issue.fields.issuetype.name }}
