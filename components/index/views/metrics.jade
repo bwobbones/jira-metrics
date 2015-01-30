@@ -1,4 +1,9 @@
 div.container
+  div.row
+    div.col-md-12
+        nvd3(options='options', data='data')
+        br
+        br
   div.row-fluid
     div.col-md-12
       div.table-responsive
@@ -27,15 +32,14 @@ div.container
                   div.col-md-2
                     button.btn.btn-default.btn-small(ng-click="isCollapsed = !isCollapsed") People
                   div.col-md-10
-                      p(ng-show="isCollapsed") {{ stat.people.join(',') }}
+                    br
+                    br
+                    p(ng-show="isCollapsed") {{ stat.people.join(',') }}
                 td {{ stat.issueCountPerWeek }}
                 td {{ stat.bugCount }}
-      throughput(id="{{stats[stats.length - 1].identifier}}", ng-attr-width="1000", ng-attr-height="300")
-
-  div.row-fluid
-    div.col-md-12
-      p * Productivity = Number of issues/week normalised by the number of people (High = good)
-      p * Predictability = Coefficient of Variance - StdDev of throughput / Mean of throughput (Low = good)
+                td
+                  pre {{stat | json}}
+      //throughput(id="{{stats[stats.length - 1].identifier}}", ng-attr-width="1000", ng-attr-height="300")
 
   div.row-fluid
     div.col-md-2

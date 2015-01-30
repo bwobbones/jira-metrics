@@ -8,7 +8,8 @@ var angularModules = angular.module('myApp', [
   'myApp.filters',
   'myApp.services',
   'myApp.directives',
-  'ngResource'
+  'ngResource',
+  'nvd3'
 ]);
 
 angularModules.value('config', {

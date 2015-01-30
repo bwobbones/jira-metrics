@@ -2,7 +2,7 @@ extends layout
 
 block body
 
-  nav.navbar.navbar-default.no-print(role="navigation")    
+  nav.navbar.navbar-default.no-print(role="navigation")
     div.container-fluid
       div.navbar-header
         a.navbar-brand(ui-sref="index") Jira Metrics
@@ -20,6 +20,8 @@ block body
   script(src='d3/d3.min.js')
   script(src='simple-statistics/src/simple_statistics.js')
   script(src='moment/moment.js')
+  script(src='nvd3/nv.d3.js')
+  script(src='angular-nvd3/dist/angular-nvd3.js')
 
   script(src='js/app.js')
   script(src='js/services.js')
@@ -28,4 +30,3 @@ block body
 
   script(src='index/controller/indexController.js')
   script(src='index/directive/throughput.js')
-  
