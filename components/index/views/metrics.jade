@@ -1,9 +1,26 @@
 div.container
   div.row
     div.col-md-12
-        nvd3(options='options', data='data')
-        br
-        br
+      h3 Throughput vs People vs Magnitude
+      nvd3(options='options', data='data.throughputPeople')
+      br
+      br
+    div.col-md-12
+      h3 Predictability vs Productivity vs Velocity
+      nvd3(options='options', data='data.predictabilityProductivity')
+      br
+      br
+      b Productivity
+      = " = Number of "
+      strong issues/week
+      = " normalised by the number of people "
+      b (High = good)
+      br
+      b Predictability
+      = " = Coefficient of Variance - StdDev of throughput / Mean of throughput "
+      b (Low = good)
+      br
+      br
   div.row-fluid
     div.col-md-12
       div.table-responsive
@@ -37,9 +54,8 @@ div.container
                     p(ng-show="isCollapsed") {{ stat.people.join(',') }}
                 td {{ stat.issueCountPerWeek }}
                 td {{ stat.bugCount }}
-                td
-                  pre {{stat | json}}
-      //throughput(id="{{stats[stats.length - 1].identifier}}", ng-attr-width="1000", ng-attr-height="300")
+                //- td
+                //-   pre {{stat | json}}
 
   div.row-fluid
     div.col-md-2

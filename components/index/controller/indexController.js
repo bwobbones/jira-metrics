@@ -12,28 +12,123 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
 
   $scope.weekBuckets = createWeekBuckets();
 
-  $scope.generateDataFromStat = function(stat) {
-    var data = [];
+  $scope.generateDataFromStat = function(stats) {
+    var throughputData = [];
+    var peopleData = [];
 
-    for (var i = 0; i < stat.throughput.length; i++) {
-      var throughputValue = stat.throughput[i];
-      data.push( {
+    var predictabilityData = [];
+    var productivityData = [];
+
+    var velocities = [];
+    var magnitudes = [];
+
+    for (var i = 0; i < stats.length; i++) {
+      var stat = stats[i];
+      var throughput = d3.round(stat.throughput[stat.throughput.length - 1]);
+      var date =  stat.week;
+      throughputData.push({
+        week: date,
         weekNumber: i + 1,
-        throughput: throughputValue
+        type: $scope.format(throughput, 'issue', 'issues'),
+        value: throughput
+      });
+
+      var people = d3.round(stat.people.length);
+      peopleData.push({
+        week:  date,
+        weekNumber: i + 1,
+        type: 'people',
+        value: people
+      });
+
+      var totalMagnitude = stat.magnitudes[stat.magnitudes.length - 1];
+      magnitudes.push({
+        week:  date,
+        weekNumber: i + 1,
+        type: 'points',
+        value: totalMagnitude
+      });
+
+      var velocity = totalMagnitude / stat.people.length / 5;
+      velocities.push({
+        week:  date,
+        weekNumber: i + 1,
+        type: 'points/person/day',
+        value: velocity
+      });
+
+      predictabilityData.push({
+        week: date,
+        weekNumber: i + 1,
+        type: '',
+        value: stat.predictability
+      });
+
+      productivityData.push({
+        week: date,
+        weekNumber: i + 1,
+        type: '',
+        value: stat.productivity
       });
     };
 
-    return [{
-              values: data,      //values - represents the array of {x,y} data points
-              key: 'Throughput', //key  - the name of the series.
-              color: '#ff7f0e',  //color - optional: choose your own line color.
-              area: true
-          }];
+    return {
+      throughputPeople: [
+            {
+                values: throughputData,
+                key: 'Throughput',
+                //color: '#ff7f0e',
+                area: true
+            },
+            {
+                values: peopleData,
+                key: 'People',
+                //color: '#ff7f0e',
+                //area: true
+            },
+            {
+                values: magnitudes,
+                key: 'Magnitude Completed',
+                //color: '#ff7f0e',
+                //area: true
+            },
+          ],
+
+          predictabilityProductivity: [
+            {
+                values: productivityData,
+                key: 'Productivity',
+                //color: '#ff7f0e',
+                area: true
+            },
+            {
+                values: predictabilityData,
+                key: 'Predictability',
+                //color: '#ff7f0e',
+                area: true
+            },
+            {
+                values: velocities,
+                key: 'Velocity',
+                //color: '#ff7f0e',
+                //area: true
+            },
+          ]
+        };
   };
+
+  $scope.format = function (count, one, many) {
+    return (count == 1 ? one : many);
+  }
+
+  $scope.isInt = function (n) {
+    return n % 1 === 0;
+  }
 
   $scope.options = {
       chart: {
-          type: 'multiBarChart',
+          type: 'lineChart',
+          //type: 'multiBarChart',
           height: 500,
           margin : {
               top: 20,
@@ -41,34 +136,38 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
               bottom: 40,
               left: 55
           },
+          transitionDuration: 500,
           x: function(d) { return d.weekNumber; },
-          y: function(d) { return d.throughput; },
+          // x: function(d) { return new Date(d.week).getTime(); },
+          y: function(d) { return d.value; },
           useInteractiveGuideline: true,
           xAxis: {
-              axisLabel: 'Week Number'
+              axisLabel: 'Week',
+              tickFormat: function(d) {
+                //return d3.time.format('%d-%m-%y')(new Date($scope.stats[d - 1].week));
+                return $scope.stats[d - 1].week;
+              },
+              //rotateLabels: 90
           },
           yAxis: {
-              axisLabel: 'Throughput',
-              tickFormat: function(d){
-                  return d3.format('.02f')(d);
-              },
-              axisLabelDistance: 30
+              //axisLabel: 'Throughput',
+              //axisLabelDistance: 30
           },
           tooltipContent: function (key, x, y, e, graph) {
             return '<h3>' + key + '</h3>' +
-                   '<p>' +  d3.round(y) + ' at Week ' + x + '</p>'
+                   '<p>' +  ($scope.isInt(y) ? d3.round(y) : y) + ' ' + e.point.type + ' for Week ' + e.point.week + '</p>'
           }
       },
       title: {
-          enable: true,
-          text: function() { return 'Throughput for Week ending ' + ($scope.stat ? $scope.stat.week : ''); }
+          enable: false,
+          text: function() { return 'Stats for Week ending ' + ($scope.stat ? $scope.stat.week : ''); }
       },
       caption: {
-          enable: true,
-          html: '<b>Productivity</b> = Number of <strong>issues/week</strong> normalised by the number of people <b>(High = good)</b><br><b>Predictability</b> = Coefficient of Variance - StdDev of throughput / Mean of throughput <b>(Low = good)</b><sup>[1, <a href="https://github.com/krispo/angular-nvd3" target="_blank">2</a>, 3]</sup>.',
+          enable: false,
+          html: '<b>Productivity</b> = Number of <strong>issues/week</strong> normalised by the number of people <b>(High = good)</b><br><b>Predictability</b> = Coefficient of Variance - StdDev of throughput / Mean of throughput <b>(Low = good)</b>',//<sup>[1, <a href="https://github.com/krispo/angular-nvd3" target="_blank">2</a>, 3]</sup>.',
           css: {
               'text-align': 'justify',
-              'margin': '10px 13px 0px 7px'
+              //'margin': '10px 13px 0px 7px'
           }
       }
   };
@@ -85,7 +184,8 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     var data = [];
     _.each(periodWindows, function(periodWindow) {
       var people = getPeople(periodWindow);
-      var throughputArray = getWeeklyThroughput(periodWindow);
+      var weeklyThroughput = getWeeklyThroughput(periodWindow);
+      var throughputArray = weeklyThroughput.counts;
       var productivity = calculateProductivity(throughputArray) / people.length;
       var predictability = calculateStdDev(throughputArray) / calculateAverage(throughputArray);
       var week = moment(periodWindow[periodWindow.length-1].startDate, 'DD/MM/YYYY').add('1', 'week').format('DD/MM/YYYY');
@@ -94,7 +194,9 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
           week: week,
           identifier: "throughput" + week.replace(/\//g, 'gap'),
           people: people,
+          magnitudes: weeklyThroughput.magnitudes,
           throughput: throughputArray,
+          throughputDates: weeklyThroughput.dates,
           total: ss.sum(throughputArray),
           average: Math.round(calculateAverage(throughputArray)),
           stddev: Math.round(calculateStdDev(throughputArray)),
@@ -104,7 +206,7 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     });
 
     $scope.stat = $scope.stats[$scope.stats.length - 1];
-    $scope.data = $scope.generateDataFromStat($scope.stat);
+    $scope.data = $scope.generateDataFromStat($scope.stats);
   });
 
   var issueQueries = [];
@@ -231,13 +333,28 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
 
   function getWeeklyThroughput(periodWindow) {
 
-    var throughputArray = [];
+    var throughput = {
+        magnitudes: [],
+        counts: [],
+        dates : []
+    };
 
     _.each(periodWindow, function(week) {
-      throughputArray.push(week.issues.length);
+      var totalMagnitude = 0;
+      for (i = 0; i < week.issues.length; i++) {
+        var issue = week.issues[i];
+        var magnitude = issue.fields["customfield_10494"];
+        if(magnitude) {
+          //console.log(issue);
+          totalMagnitude += magnitude;
+        }
+      }
+      throughput.magnitudes.push(totalMagnitude);
+      throughput.counts.push(week.issues.length);
+      throughput.dates.push(week.startDate);
     });
 
-    return throughputArray;
+    return throughput;
   }
 
   function calculateProductivity(throughputArray, people) {
