@@ -111,7 +111,7 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
                 values: velocities,
                 key: 'Velocity',
                 //color: '#ff7f0e',
-                //area: true
+                area: true
             },
           ]
         };
@@ -125,10 +125,17 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     return n % 1 === 0;
   }
 
+  $scope.toggleBarChart = function() {
+    if($scope.isBarchart) {
+      $scope.options.chart.type = 'lineChart';
+    } else {
+      $scope.options.chart.type = 'multiBarChart';
+    }
+  };
+
   $scope.options = {
       chart: {
-          type: 'lineChart',
-          //type: 'multiBarChart',
+          type: 'multiBarChart',
           height: 500,
           margin : {
               top: 20,
@@ -177,11 +184,12 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
         'projects[]': config.projects,
         'completionTypes[]': config.completionTypes,
         issueTypes: config.issueTypes
-    }).get(function() {
+    }, { get : { method : 'GET', cache: true}}).get(function() {
     putIssuesInBuckets();
     var periodWindows = getPeriodWindows();
     $scope.stats = [];
     var data = [];
+    var i = 0;
     _.each(periodWindows, function(periodWindow) {
       var people = getPeople(periodWindow);
       var weeklyThroughput = getWeeklyThroughput(periodWindow);
@@ -189,11 +197,15 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
       var productivity = calculateProductivity(throughputArray) / people.length;
       var predictability = calculateStdDev(throughputArray) / calculateAverage(throughputArray);
       var week = moment(periodWindow[periodWindow.length-1].startDate, 'DD/MM/YYYY').add('1', 'week').format('DD/MM/YYYY');
+
       $scope.stats.push(
         {
+          i: i++,
           week: week,
           identifier: "throughput" + week.replace(/\//g, 'gap'),
           people: people,
+          issueCount: weeklyThroughput.issues[weeklyThroughput.issues.length - 1].length,
+          bugCount: countBugs(weeklyThroughput.issues[weeklyThroughput.issues.length - 1]),
           magnitudes: weeklyThroughput.magnitudes,
           throughput: throughputArray,
           throughputDates: weeklyThroughput.dates,
@@ -207,35 +219,13 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
 
     $scope.stat = $scope.stats[$scope.stats.length - 1];
     $scope.data = $scope.generateDataFromStat($scope.stats);
-  });
 
-  var issueQueries = [];
-  $scope.issuesPerWeek = [];
-  for (var i = 0; i < 1; i++) {
-    query = $resource('api/allIssuesPerWeek/',
-      {
-        weekNumber: i.toString(),
-        jiraHostName: config.jiraHostName,
-        'projects[]': config.projects,
-        issueTypes: config.issueTypes
-      })
-      .get(function(data) {
-        $scope.issuesPerWeek.push({weekNumber: '0', issueData: data.issues})
-      }).$promise;
-      issueQueries.push(query);
-  }
-
-  $q.all(issueQueries).then(function() {
-    _.each($scope.issuesPerWeek, function(issues) {
-      var bugCount = countBugs(issues);
-      //gatherIssueTime(issues);
-      putIssueListInStats(issues, bugCount);
-    });
+    $scope.loaded = true;
   });
 
   function countBugs(issues) {
     var bugCount = 0;
-    _.each(issues.issueData, function(issue) {
+    _.each(issues, function(issue) {
       if(issue.fields.issuetype.name === 'Bug') {
         bugCount++;
       }
@@ -271,25 +261,15 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     });
   }
 
-  function putIssueListInStats(issues, bugCount) {
-    var endOfWeek = moment().endOf('week');
-    var issueCountWeek = moment(endOfWeek).subtract(issues.weekNumber, 'weeks');
-    _.each($scope.stats, function(stat) {
-      if(stat.week === issueCountWeek.format('DD/MM/YYYY')) {
-        stat.issueCountPerWeek = issues.issueData.length;
-        stat.bugCount = bugCount;
-      }
-    });
-  }
-
   function createWeekBuckets() {
     var endOfWeek = moment().endOf('week');
     endOfWeek = endOfWeek.add('1', 'week');
     var startOfBuckets = moment(endOfWeek).subtract('23', 'weeks');
 
     var buckets = [];
+    var i = 0;
     while(startOfBuckets.isBefore(endOfWeek)) {
-      buckets.push({startDate: startOfBuckets.format('DD/MM/YYYY'), issues: []});
+      buckets.push({i: i++, startDate: startOfBuckets.format('DD/MM/YYYY'), issues: []});
       startOfBuckets.add('1', 'week');
     }
     return buckets;
@@ -321,14 +301,21 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
 
     _.each(periodWindow, function(periodIssues) {
       _.each(periodIssues.issues, function(issue) {
-        people.push(issue.fields.assignee.displayName);
+        people.push(issue.fields.assignee);
       });
     });
 
-    people = _.uniq(people);
-    people = _.without(people, "wyvern_team_b_backlog", "Wyvern CCB", "wyvern_implementation_pool");
+    var uniquePeople = _.map(_.groupBy(people,function(person){
+      return person.name;
+    }),function(grouped){
+      return grouped[0];
+    });
 
-    return people;
+    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_b_backlog"}));
+    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "Wyvern CCB"}));
+    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_implementation_pool"}));
+
+    return uniquePeople;
   }
 
   function getWeeklyThroughput(periodWindow) {
@@ -336,7 +323,8 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     var throughput = {
         magnitudes: [],
         counts: [],
-        dates : []
+        dates : [],
+        issues: []
     };
 
     _.each(periodWindow, function(week) {
@@ -345,12 +333,13 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
         var issue = week.issues[i];
         var magnitude = issue.fields["customfield_10494"];
         if(magnitude) {
-          //console.log(issue);
           totalMagnitude += magnitude;
         }
       }
+
       throughput.magnitudes.push(totalMagnitude);
       throughput.counts.push(week.issues.length);
+      throughput.issues.push(week.issues);
       throughput.dates.push(week.startDate);
     });
 

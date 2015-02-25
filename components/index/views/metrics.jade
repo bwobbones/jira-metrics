@@ -1,5 +1,19 @@
 div.container
-  div.row
+  div.row(ng-hide="loaded")
+    div.col-md-12
+      img(src="img/loader.gif", style="margin-top: 15px; margin-right: 15px; float: left;")
+      h2 Loading JIRAs...
+  div.row(ng-show="loaded")
+    div.col-md-12
+      h3 Who's in this Week?
+      img.img-thumbnail(ng-repeat="person in stat.people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
+      br
+      br
+    div.col-md-12
+        .form-group.pull-right
+          label(for="chartTypeButton", style="margin-right: 10px;") Show as:
+          button.btn.btn-primary(type="button", id="chartTypeButton", ng-model="isBarchart", ng-change="toggleBarChart()", btn-checkbox)
+            {{isBarchart ? 'Line Chart' : 'Bar chart'}}
     div.col-md-12
       h3 Throughput vs People vs Magnitude
       nvd3(options='options', data='data.throughputPeople')
@@ -13,15 +27,21 @@ div.container
       b Productivity
       = " = Number of "
       strong issues/week
-      = " normalised by the number of people "
-      b (High = good)
+      = " normalised by the number of "
+      b people (High = good)
       br
       b Predictability
       = " = Coefficient of Variance - StdDev of throughput / Mean of throughput "
       b (Low = good)
       br
+      b Velocity
+      = " = Number of "
+      strong points/week
+      = " normalised by the number of "
+      b people (High = good)
       br
-  div.row-fluid
+      br
+  div.row-fluid(ng-show="loaded")
     div.col-md-12
       div.table-responsive
         table.table.table-striped.table-bordered
@@ -37,7 +57,7 @@ div.container
               th Issue Count
               th Bug Count
             tbody
-              tr(ng-repeat="stat in stats")
+              tr(ng-repeat="stat in stats | orderBy:'i':true")
                 td {{ stat.week }}
                 td
                   throughput(id="{{stat.identifier}}", ng-attr-width="80", ng-attr-height="50")
@@ -48,16 +68,15 @@ div.container
                 td
                   div.col-md-2
                     button.btn.btn-default.btn-small(ng-click="isCollapsed = !isCollapsed") People
-                  div.col-md-10
+                  div.col-md-10(ng-show="isCollapsed")
                     br
                     br
-                    p(ng-show="isCollapsed") {{ stat.people.join(',') }}
-                td {{ stat.issueCountPerWeek }}
+                    h5 {{stat.people.length}} People
+                    img.img-thumbnail(ng-repeat="person in stat.people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
+                td {{ stat.issueCount }}
                 td {{ stat.bugCount }}
-                //- td
-                //-   pre {{stat | json}}
 
-  div.row-fluid
+  div.row-fluid(ng-show="loaded")
     div.col-md-2
       button.btn.btn-default.btn-small(ng-click="sourceCollapsed = !sourceCollapsed") Source
     div.col-md-10(ng-show="sourceCollapsed")
@@ -71,7 +90,7 @@ div.container
               th Issues Completed
               th Source
             tbody
-              tr(ng-repeat="key in weekBuckets")
+              tr(ng-repeat="key in weekBuckets | orderBy:'i':true")
                 td {{ key.startDate }}
                 td {{ key.issues.length }}
                 td

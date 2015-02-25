@@ -16,7 +16,7 @@ angularModules.value('config', {
 	jiraHostName: 'https://resourceful.atlassian.net',
 	projects: ["'Resource'"],
 	issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
-  completionTypes: ["Fixed"]
+  completionTypes: ['Fixed', 'Completed', 'Complete']
 });
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
