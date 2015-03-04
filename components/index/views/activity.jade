@@ -1,23 +1,21 @@
-.row(ng-hide="activityLoaded")
-  .col-md-12
-    img(src="img/loader.gif", style="margin-top: 15px; margin-right: 15px; float: left;")
-    h2 Loading JIRAs...
-
-.row(ng-show="activityLoaded")
+.row
   .col-md-12
     rd-widget
       rd-widget-header(icon="fa-group", title="Who's in this Week?")
         a(href="#") {{stat.people.length}} People
-      rd-widget-body.large.no-padding
+      rd-widget-body.large.no-padding(loading="{{!stat}}")
         img.img-thumbnail(ng-repeat="person in stat.people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
   .col-md-12
     rd-widget
       rd-widget-header(icon="fa-comment-o", title="Activity Stream")
-      rd-widget-body.large.no-padding
+      rd-widget-body.large.no-padding(loading="{{!recentActivity}}")
         table.table
             tbody
               tr(ng-repeat="item in recentActivity")
                 td
                   .row
-                    .col-xs-2(ng-bind-html="getImage(item)")
-                    .col-xs-10(ng-bind-html="getHtml(item)")
+                    .col-xs-1(ng-bind-html="getImage(item)")
+                    .col-xs-11(ng-bind-html="getHtml(item)")
+                    .col-xs-11.pull-right
+                      i.fa.fa-clock-o(style="margin-right:10px;")
+                      {{item.updated | date:'medium'}}
