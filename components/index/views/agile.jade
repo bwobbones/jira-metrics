@@ -8,6 +8,7 @@
   .col-md-12
     rd-widget
       rd-widget-header(icon="fa-clock-o", title="Current Sprint")
+        {{currentSprintJiras.issues.length}} issues
       rd-widget-body.medium.no-padding(loading="{{!currentSprintJiras.issues}}")
         .row
           .col-md-4
