@@ -9,14 +9,23 @@ var angularModules = angular.module('myApp', [
   'myApp.services',
   'myApp.directives',
   'ngResource',
-  'nvd3'
+  'ngCookies',
+  'nvd3',
+  'RDash',
+  'ngSanitize',
 ]);
 
+var jiraHostName = 'https://resourceful.atlassian.net';
+var confluenceHostName = 'https://resourceful.atlassian.net';
+var mercurialHostName = 'https://resourceful.atlassian.net';
+
 angularModules.value('config', {
-	jiraHostName: 'https://resourceful.atlassian.net',
 	projects: ["'Resource'"],
-	issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
-  completionTypes: ['Fixed', 'Completed', 'Complete']
+  jiraHostName: jiraHostName,
+  confluenceHostName: confluenceHostName,
+  mercurialHostName: mercurialHostName,
+  issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
+  completionTypes: ['Fixed', 'Completed']
 });
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {

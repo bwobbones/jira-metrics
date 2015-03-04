@@ -1,14 +1,66 @@
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+
+  $urlRouterProvider.otherwise('/metrics');
+
   $stateProvider
-    .state('index', {
-      url: '/',
+    .state('Metrics', {
+      url: '/metrics',
       views: {
         "searchPanel": {templateUrl: "partials/index/metrics", controller: IndexCtrl}
       }
-    });
+    })
+    .state('agile', {
+        url: '/agile',
+        views: {
+          "searchPanel": {templateUrl: "partials/index/agile", controller: IndexCtrl}
+        }
+    })
+    .state('activity', {
+        url: '/activity',
+        views: {
+          "searchPanel": {templateUrl: "partials/index/activity", controller: IndexCtrl}
+        }
+    })
 });
 
-function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
+function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _, $http, $sce) {
+
+  $scope.getImage = function(item) {
+    var html = '';
+
+    if(item.author.link[0]) {
+      html += '<img class="img-thumbnail" src="' + config.jiraHostName + '/secure/useravatar?ownerId=' + item.author.username.__text + '" title="' + item.author.name + '"/>';
+    }
+
+    return $sce.trustAsHtml(html);
+  }
+
+  $scope.getHtml = function(item) {
+    var html = '';
+
+    if(item.title) {
+      html += item.title.__text;
+    }
+
+    if(item.summary) {
+      html += '<br/>' + item.summary.__text;
+    }
+
+    return $sce.trustAsHtml(html);
+  }
+
+  $http.get('api/xml?url=' + config.jiraHostName + '/activity?maxResults=5&streams=key+IS+' + config.projects[0] + '&title=Activity%20Stream').success(function(data) {
+    $scope.recentActivity = [];
+
+    var activity = x2js.xml_str2json(data);
+
+    _.each(activity.feed.entry, function(activity) {
+      $scope.recentActivity.push(activity);
+    });
+
+    $scope.activityLoaded = true;
+  }).error(function(e){ console.log(e);});
+
 
   $scope.weekBuckets = createWeekBuckets();
 
@@ -125,17 +177,26 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
     return n % 1 === 0;
   }
 
-  $scope.toggleBarChart = function() {
-    if($scope.isBarchart) {
+  $rootScope.$on('toggleBarChart', function(event, isBarchart){
+    $scope.isBarchart = isBarchart;
+    if(isBarchart) {
       $scope.options.chart.type = 'lineChart';
     } else {
       $scope.options.chart.type = 'multiBarChart';
+    }
+  });
+
+  $scope.chartType = function() {
+    if($scope.isBarchart) {
+      return 'lineChart';
+    } else {
+      return 'multiBarChart';
     }
   };
 
   $scope.options = {
       chart: {
-          type: 'multiBarChart',
+          type: $scope.chartType(),
           height: 500,
           margin : {
               top: 20,
@@ -178,6 +239,13 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
           }
       }
   };
+
+  $scope.currentSprintJiras = $resource('api/currentSprint', {
+      jiraHostName: config.jiraHostName,
+      'projects[]': config.projects,
+      'completionTypes[]': config.completionTypes,
+      issueTypes: config.issueTypes
+  }, { get : { method : 'GET', cache: true}}).get();
 
   $scope.allJiras = $resource('api/throughputData', {
         jiraHostName: config.jiraHostName,
@@ -263,7 +331,6 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
 
   function createWeekBuckets() {
     var endOfWeek = moment().endOf('week');
-    endOfWeek = endOfWeek.add('1', 'week');
     var startOfBuckets = moment(endOfWeek).subtract('23', 'weeks');
 
     var buckets = [];
@@ -311,6 +378,7 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _) {
       return grouped[0];
     });
 
+    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_a_backlog"}));
     uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_b_backlog"}));
     uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "Wyvern CCB"}));
     uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_implementation_pool"}));
