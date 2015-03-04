@@ -24,44 +24,7 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, $locationPro
 });
 
 function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _, $http, $sce) {
-
-  $scope.getImage = function(item) {
-    var html = '';
-
-    if(item.author.link[0]) {
-      html += '<img class="img-thumbnail" src="' + config.jiraHostName + '/secure/useravatar?ownerId=' + item.author.username.__text + '" title="' + item.author.name + '"/>';
-    }
-
-    return $sce.trustAsHtml(html);
-  }
-
-  $scope.getHtml = function(item) {
-    var html = '';
-
-    if(item.title) {
-      html += item.title.__text;
-    }
-
-    if(item.summary) {
-      html += '<br/>' + item.summary.__text;
-    }
-
-    return $sce.trustAsHtml(html);
-  }
-
-  $http.get('api/xml?url=' + config.jiraHostName + '/activity?maxResults=5&streams=key+IS+' + config.projects[0] + '&title=Activity%20Stream').success(function(data) {
-    $scope.recentActivity = [];
-
-    var activity = x2js.xml_str2json(data);
-
-    _.each(activity.feed.entry, function(activity) {
-      $scope.recentActivity.push(activity);
-    });
-
-    $scope.activityLoaded = true;
-  }).error(function(e){ console.log(e);});
-
-
+  $scope.config = config;
   $scope.weekBuckets = createWeekBuckets();
 
   $scope.generateDataFromStat = function(stats) {

@@ -8,14 +8,5 @@
   .col-md-12
     rd-widget
       rd-widget-header(icon="fa-comment-o", title="Activity Stream")
-      rd-widget-body.large.no-padding(loading="{{!recentActivity}}")
-        table.table
-            tbody
-              tr(ng-repeat="item in recentActivity")
-                td
-                  .row
-                    .col-xs-1(ng-bind-html="getImage(item)")
-                    .col-xs-11(ng-bind-html="getHtml(item)")
-                    .col-xs-11.pull-right
-                      i.fa.fa-clock-o(style="margin-right:10px;")
-                      {{item.updated | date:'medium'}}
+      rd-widget-body.large.no-padding
+        feed(src="config.jiraHostName + '/activity?maxResults=5&streams=key+IS+' + config.projects[0] + '&title=Activity%20Stream'")
