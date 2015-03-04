@@ -160,7 +160,7 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _, $http, 
   $scope.options = {
       chart: {
           type: $scope.chartType(),
-          height: 500,
+          height: 300,
           margin : {
               top: 20,
               right: 20,
