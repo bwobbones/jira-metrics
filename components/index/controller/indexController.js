@@ -24,6 +24,7 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, $locationPro
 });
 
 function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _, $http, $sce) {
+
   $scope.config = config;
   $scope.weekBuckets = createWeekBuckets();
 

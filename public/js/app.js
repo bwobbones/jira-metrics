@@ -20,10 +20,10 @@ var confluenceHostName = 'https://resourceful.atlassian.net';
 var mercurialHostName = 'https://resourceful.atlassian.net';
 
 angularModules.value('config', {
-	projects: ["'Resource'"],
   jiraHostName: jiraHostName,
   confluenceHostName: confluenceHostName,
   mercurialHostName: mercurialHostName,
+  projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
   completionTypes: ['Fixed', 'Completed']
 });

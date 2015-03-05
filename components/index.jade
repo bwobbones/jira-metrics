@@ -52,7 +52,7 @@ block body
                   | JIRA Dashboard
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
-          div(ui-view="searchPanel")
+          div(ui-view="searchPanel", style="height:100%;")
 
   script(src='jquery/dist/jquery.js')
   script(src='angular/angular.js')
