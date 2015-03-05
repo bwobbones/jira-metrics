@@ -2,3 +2,7 @@ syntax: glob
 .DS_Store
 .git
 daemon/*
+scripts/
+libpeerconnection.log
+build.xml
+LICENSE

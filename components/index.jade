@@ -14,15 +14,15 @@ block body
             span NAVIGATION
 
           li.sidebar-list
-            a(href='#')
+            a(href='#/metrics', ng-class="{ active: isActive('/metrics') }")
               | Metrics
               span.menu-icon.fa.fa-bar-chart
           li.sidebar-list
-            a(href='#/agile')
+            a(href='#/agile', ng-class="{ active: isActive('/agile') }")
               | Agile
               span.menu-icon.fa.fa-tachometer
           li.sidebar-list
-            a(href='#/activity')
+            a(href='#/activity', ng-class="{ active: isActive('/activity') }")
               | Activity
               span.menu-icon.fa.fa-comment-o
         .sidebar-footer
@@ -41,12 +41,16 @@ block body
             .col-xs-12
               .user.pull-right
                 .item.dropdown
-                  a.dropdown-toggle(href='#')
-                    i.fa.fa-cog
+                  a.dropdown-toggle(href='#', ng-show="isActive('/metrics')")
+                    i.fa.fa-cog(style="font-size: 2em;")
                   ul.dropdown-menu.dropdown-menu-right
                     li.link
                       a(ng-model="isBarchart", ng-change="toggleBarChart()", btn-checkbox)
                         {{isBarchart ? 'Show as Bar chart' : 'Show as Line Chart'}}
+                .item.dropdown
+                  a.dropdown-toggle(href="#")
+                    i.fa.fa-play-circle(ng-hide="slideshowPlaying", style="font-size: 2em;", ng-click='startSlideshow()', title="Start Slideshow")
+                    i.fa.fa-pause(ng-show="slideshowPlaying", style="font-size: 2em;", ng-click='pauseSlideshow()', title="Pause Slideshow")
               .meta
                 .page
                   | JIRA Dashboard

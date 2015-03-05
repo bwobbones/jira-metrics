@@ -20,7 +20,7 @@ function feed($http,config, $sce) {
 
           $scope.getImage = function(item) {
             var html = '';
-            if(item.author.link[0]) {
+            if(item.author.link) {
               html += '<img class="img-thumbnail" src="' + config.jiraHostName + '/secure/useravatar?ownerId=' + item.author.username.__text + '" title="' + item.author.name + '"/>';
             }
             return $sce.trustAsHtml(html);
