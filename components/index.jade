@@ -49,13 +49,17 @@ block body
                         {{isBarchart ? 'Show as Bar chart' : 'Show as Line Chart'}}
                 .item.dropdown
                   a.dropdown-toggle(href="#")
-                    i.fa.fa-play-circle(ng-hide="slideshowPlaying", style="font-size: 2em;", ng-click='startSlideshow()', title="Start Slideshow")
+                    i.fa.fa-play-circle(ng-hide="slideshowPlaying", style="font-size: 2em;", ng-click='startSlideshow()', title="Start Slideshow ({{slideTimeInSecs}} secs)")
                     i.fa.fa-pause(ng-show="slideshowPlaying", style="font-size: 2em;", ng-click='pauseSlideshow()', title="Pause Slideshow")
               .meta
                 .page
                   | JIRA Dashboard
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
+              br
+              timer(ng-class="{'hidden': !started}", autostart="false", interval="100", language="en")
+                .progress
+                  .progress-bar(style='width: {{(millis / 1000) * (100 / $parent.slideTimeInSecs) | number:0}}%;')
           div(ui-view="searchPanel", style="height:100%;")
 
   script(src='jquery/dist/jquery.js')
@@ -67,10 +71,14 @@ block body
   script(src='lodash/dist/lodash.underscore.min.js')
   script(src='d3/d3.min.js')
   script(src='simple-statistics/src/simple_statistics.js')
-  script(src='moment/moment.js')
+  script(src='momentjs/min/moment.min.js')
+  script(src='momentjs/min/locales.min.js')
   script(src='nvd3/nv.d3.js')
   script(src='angular-nvd3/dist/angular-nvd3.js')
   script(src='angular-sanitize/angular-sanitize.min.js')
+  script(src='humanize-duration/humanize-duration.js')
+  script(src='angular-timer/app/js/timer.js')
+  script(src='angular-timer/app/js/i18nService.js')
 
   script(src='js/xml2json.js')
 

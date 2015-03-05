@@ -13,6 +13,7 @@ var angularModules = angular.module('myApp', [
   'nvd3',
   'RDash',
   'ngSanitize',
+  'timer',
 ]);
 
 var jiraHostName = 'https://resourceful.atlassian.net';
@@ -25,7 +26,8 @@ angularModules.value('config', {
   mercurialHostName: mercurialHostName,
   projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
-  completionTypes: ['Fixed', 'Completed']
+  completionTypes: ['Fixed', 'Completed'],
+  slideTimeInSecs: 8,
 });
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {

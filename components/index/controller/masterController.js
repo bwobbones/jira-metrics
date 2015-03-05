@@ -10,6 +10,22 @@ String.prototype.capitalizeFirstLetter = function() {
 }
 
 function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, $stateParams, config, $timeout) {
+    $scope.slideTimeInSecs = config.slideTimeInSecs;
+
+    $scope.startTimer = function() {
+      $scope.started = true;
+      document.getElementsByTagName('timer')[0].start();
+    }
+
+    $scope.stopTimer = function() {
+      $scope.started = false;
+      document.getElementsByTagName('timer')[0].clear();
+    };
+
+    $scope.restartTimer = function() {
+        $scope.stopTimer();
+        $scope.startTimer();
+    }
 
     $scope.slideshowPlaying = null;
 
@@ -18,29 +34,29 @@ function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, $stateP
             $timeout.cancel($scope.slideshowPlaying);
         }
 
+        $scope.stopTimer();
         $scope.slideshowPlaying = null;
     };
 
     $scope.startSlideshow = function() {
         var pages = ['/metrics', '/agile', '/activity'];
-        var slideTime = 5000;
+        var slideTime = $scope.slideTimeInSecs * 1000;
         var gotoNextPage = function() {
+            $scope.restartTimer();
             if(!$scope.slideshowPlaying) {
-                console.log('not playing')
                 return;
             }
-            console.log('playing')
             var currentPage = $location.path();
             var currentPageIndex = pages.indexOf($location.path());
             if(currentPageIndex > -1) {
                 var nextPageIndex = (currentPageIndex + 1) % pages.length;
                 var nextPage = pages[nextPageIndex];
-                console.log(nextPage)
                 $location.path(nextPage);
                 $scope.slideshowPlaying = $timeout(gotoNextPage, slideTime);
             }
         };
 
+        $scope.startTimer();
         $scope.slideshowPlaying = $timeout(gotoNextPage, slideTime);
     };
 

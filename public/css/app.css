@@ -77,3 +77,23 @@ ul.sidebar .sidebar-list a.active {
   /* Sidebar header and footer color */
   background: #2d3e63;
 }
+
+.progress {
+  height: 5px;
+  margin-left: -15px;
+  margin-top: -8px;
+  width: 101%;
+}
+
+.progress-bar {
+  -webkit-transition: width .1s ease;
+  -moz-transition: width .1s ease;
+  -ms-transition: width .1s ease;
+  -o-transition: width .1s ease;
+  transition: width .1s ease;
+}
+
+.hidden {
+  display: initial !important;
+  visibility: hidden !important;
+}
