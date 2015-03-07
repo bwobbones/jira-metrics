@@ -204,11 +204,11 @@ function IndexCtrl($scope, $rootScope, $state, $resource, $q, config, _, $http, 
       }
   };
 
-  $scope.currentSprintJiras = $resource('api/currentSprint', {
+  $scope.currentSprintJiras = $resource('api/search', {
       jiraHostName: config.jiraHostName,
       'projects[]': config.projects,
-      'completionTypes[]': config.completionTypes,
-      issueTypes: config.issueTypes
+      issueTypes: config.issueTypes,
+      search: "labels in (teammatrix)",
   }, { get : { method : 'GET', cache: true}}).get();
 
   $scope.allJiras = $resource('api/throughputData', {

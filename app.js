@@ -2,7 +2,8 @@
 /**
  * Module dependencies
  */
-process.env.DBSTRING = process.env.DBSTRING_DEV;
+var dotenv = require('dotenv');
+dotenv.load();
 
 var express = require('express'),
   routes = require('./routes'),
@@ -26,8 +27,6 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'components')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/static', express.static(__dirname + '/public'));
-app.use('/static_bower', express.static(__dirname + '/bower_components'));
 app.use(express.static(__dirname + '/bower_components'));
 app.use('/test', express.static(__dirname + '/test'));
 app.use(app.router);
@@ -66,6 +65,10 @@ app.get('/api/xml', function(req, res) {
   api.xml(req, res);
 });
 
+app.get('/api/search', function(req, res) {
+  api.search(req, res);
+});
+
 app.get('/api/allIssuesPerWeek/:weekNumber', function(req, res) {
   api.allIssuesPerWeek(req, res);
 });
@@ -81,7 +84,6 @@ app.get('*', routes.index);
 /**
  * Start Server
  */
-
 http.createServer(app).listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'));
 });

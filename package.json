@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "dotenv": "^0.5.1",
     "express": "~3.2.6",
     "jade": "~0.31.2",
     "moment": "x.x.x",

@@ -11,7 +11,7 @@
         {{currentSprintJiras.issues.length}} issues
       rd-widget-body.medium.no-padding(loading="{{!currentSprintJiras.issues}}")
         .row
-          .col-md-4
+          .col-md-3
             .table-responsive
               table.table.table-striped.table-bordered.table-hover
                 thead
@@ -21,10 +21,10 @@
                     tr(ng-repeat="issue in open = (currentSprintJiras.issues | filter:{fields: { status: { name: 'Open' }}})")
                       td
                         img.img-thumbnail(src="{{issue.fields.assignee.avatarUrls.16x16}}", title="{{issue.fields.assignee.displayName}}")
-                        a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
+                        a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
                         br
                         {{ issue.fields.summary }}
-          .col-md-4
+          .col-md-3
             .table-responsive
               table.table.table-striped.table-bordered.table-hover
                 thead
@@ -34,19 +34,32 @@
                     tr(ng-repeat="issue in inProgress = (currentSprintJiras.issues | filter:{fields: { status: { name: 'In Progress' }}})")
                       td
                         img.img-thumbnail(src="{{issue.fields.assignee.avatarUrls.16x16}}", title="{{issue.fields.assignee.displayName}}")
-                        a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
+                        a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
                         br
                         {{ issue.fields.summary }}
-          .col-md-4
+          .col-md-3
+            .table-responsive
+              table.table.table-striped.table-bordered.table-hover
+                thead
+                  tr
+                    th On Hold ({{onhold.length}})
+                  tbody
+                    tr(ng-repeat="issue in onhold = (currentSprintJiras.issues | filter:{fields: { status: { name: 'On hold' }}})")
+                      td
+                        img.img-thumbnail(src="{{issue.fields.assignee.avatarUrls.16x16}}", title="{{issue.fields.assignee.displayName}}")
+                        a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
+                        br
+                        {{ issue.fields.summary }}
+          .col-md-3
             .table-responsive
               table.table.table-striped.table-bordered.table-hover
                 thead
                   tr
                     th Done ({{completed.length}})
                   tbody
-                    tr(ng-repeat="issue in completed = (currentSprintJiras.issues | filter:{fields: { status: { name: 'Completed' }}})")
+                    tr(ng-repeat="issue in completed = (currentSprintJiras.issues | filter:{fields: { status: { name: 'Resolved' }}})")
                       td
                         img.img-thumbnail(src="{{issue.fields.assignee.avatarUrls.16x16}}", title="{{issue.fields.assignee.displayName}}")
-                        a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
+                        a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
                         br
                         {{ issue.fields.summary }}
