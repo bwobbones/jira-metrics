@@ -26,7 +26,7 @@ angularModules.value('config', {
   mercurialHostName: mercurialHostName,
   projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
-  completionTypes: ['Fixed', 'Completed'],
+  completionTypes: ['Fixed'],
   slideTimeInSecs: 8,
 });
 
