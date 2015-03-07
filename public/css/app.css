@@ -6,6 +6,7 @@ html, body {
 body {
   /*padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
 }
+
 .container > footer p {
   text-align: center; /* center align it with the container */
 }
@@ -48,7 +49,7 @@ text.active {
 /* bootstrap customisation */
 .modal {
     width: 70%; /* respsonsive width */
-    margin-left:-35%; /* width/2) */ 
+    margin-left:-35%; /* width/2) */
 }
 
 .drop {
@@ -63,4 +64,36 @@ text.active {
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
+}
+
+/* Show links as active (dark navy with yellow left border) */
+ul.sidebar .sidebar-list a.active {
+  color: #fff;
+  border-left: 3px solid #e99d1a;
+  text-indent: 22px;
+}
+
+ul.sidebar .sidebar-list a.active {
+  /* Sidebar header and footer color */
+  background: #2d3e63;
+}
+
+.progress {
+  height: 5px;
+  margin-left: -15px;
+  margin-top: -8px;
+  width: 101%;
+}
+
+.progress-bar {
+  -webkit-transition: width .1s ease;
+  -moz-transition: width .1s ease;
+  -ms-transition: width .1s ease;
+  -o-transition: width .1s ease;
+  transition: width .1s ease;
+}
+
+.hidden {
+  display: initial !important;
+  visibility: hidden !important;
 }

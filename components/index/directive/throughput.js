@@ -5,20 +5,19 @@ metricsDirectives.directive('throughput', function($rootScope) {
 
     link: function(scope, element, attrs) {
 
-      var width = 80;
-      var height = 50;
+      var width = attrs['width'] || 80;
+      var height = attrs['height'] || 50;
 
       scope.$watch('stats', function(newValue, oldValue) {
-
-        if (newValue == oldValue) {
+        if(!element[0].id) {
           return;
-        }        
+        }
 
         var svg = d3.select('#' + element[0].id)
           .append("svg")
           .attr("width", width)
           .attr("height", height)
-          .append("g")          
+          .append("g")
 
         var x = d3.scale.linear()
           .range([0, width]);
@@ -53,14 +52,14 @@ metricsDirectives.directive('throughput', function($rootScope) {
               .attr("class", "line")
               .attr("d", line)
               .append("svg:title")
-              .text(stat.throughput);              
+              .text(stat.throughput);
           }
         });
 
       }, true);
 
     }
- 
+
   }
 
 });

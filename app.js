@@ -1,4 +1,4 @@
-  
+
 /**
  * Module dependencies
  */
@@ -54,9 +54,16 @@ if (app.get('env') === 'production') {
 app.get('/', routes.index);
 app.get('/partials/:component/:name', routes.partials);
 
-// Personnel
 app.get('/api/throughputData', function(req, res) {
   api.throughputData(req, res);
+});
+
+app.get('/api/currentSprint', function(req, res) {
+  api.currentSprint(req, res);
+});
+
+app.get('/api/xml', function(req, res) {
+  api.xml(req, res);
 });
 
 app.get('/api/allIssuesPerWeek/:weekNumber', function(req, res) {
