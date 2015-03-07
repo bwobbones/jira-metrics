@@ -10,7 +10,7 @@
     "node-rest-client": "^1.4.3",
     "underscore": "x.x.x"
   },
-  "devDependencies": {
+  "optionalDependencies": {
     "node-windows": "^0.1.7",
     "path": "^0.11.14"
   }
