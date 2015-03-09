@@ -3,15 +3,15 @@
  */
 
 angular.module('myApp')
-    .controller('MasterCtrl', ['$scope', '$cookieStore', '$rootScope', '$location', '$state', '$stateParams', 'config', '$timeout', MasterCtrl]);
+    .controller('MasterCtrl', ['$scope', '$cookieStore', '$rootScope', '$location', '$state', 'config', '$timeout', 'routes', '_', MasterCtrl]);
 
 String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, $stateParams, config, $timeout) {
+function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, config, $timeout, routes, _) {
     $scope.slideTimeInSecs = config.slideTimeInSecs;
-
+    $scope.routes = routes;
     $scope.startTimer = function() {
       $scope.started = true;
       document.getElementsByTagName('timer')[0].start();
@@ -39,7 +39,11 @@ function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, $stateP
     };
 
     $scope.startSlideshow = function() {
-        var pages = ['/metrics', '/agile', '/activity'];
+        var pages = [];
+        _.each(routes, function(route) {
+            pages.push('/' + route.url);
+        });
+
         var slideTime = $scope.slideTimeInSecs * 1000;
         var gotoNextPage = function() {
             $scope.restartTimer();

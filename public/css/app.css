@@ -1,6 +1,7 @@
 /* Override some defaults */
 html, body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -73,6 +74,11 @@ ul.sidebar .sidebar-list a.active {
   text-indent: 22px;
 }
 
+#page-wrapper:not(.open) ul.sidebar .sidebar-list a.active span {
+  border-left: 3px solid #e99d1a;
+  text-indent: 22px;
+}
+
 ul.sidebar .sidebar-list a.active {
   /* Sidebar header and footer color */
   background: #2d3e63;
@@ -86,14 +92,19 @@ ul.sidebar .sidebar-list a.active {
 }
 
 .progress-bar {
-  -webkit-transition: width .1s ease;
-  -moz-transition: width .1s ease;
-  -ms-transition: width .1s ease;
-  -o-transition: width .1s ease;
-  transition: width .1s ease;
+  -webkit-transition: width .1s linear;
+  -moz-transition: width .1s linear;
+  -ms-transition: width .1s linear;
+  -o-transition: width .1s linear;
+  transition: width .1s linear;
 }
 
 .hidden {
   display: initial !important;
   visibility: hidden !important;
+}
+
+#content-wrapper, .page-content {
+  width:100% !important;
+  height:96% !important;
 }

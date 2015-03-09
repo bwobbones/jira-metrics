@@ -8,30 +8,14 @@
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-bar-chart", title="Throughput vs People vs Magnitude")
-      rd-widget-body.medium.no-padding(loading="{{!data.throughputPeople}}")
-        nvd3(options='options', data='data.throughputPeople')
+      rd-widget-body.medium.no-padding(loading="{{!graphData.throughputPeople}}")
+        nvd3(options='options', data='graphData.throughputPeople')
   .col-lg-6.col-md-12
-    rd-widget(loading="{{!data.predictabilityProductivity}}")
+    rd-widget(loading="{{!graphData.predictabilityProductivity}}")
       rd-widget-header(icon="fa-bar-chart", title="Predictability vs Productivity vs Velocity")
-      rd-widget-body.medium.no-padding(loading="{{!data.predictabilityProductivity}}")
-        nvd3(options='options', data='data.predictabilityProductivity')
-        br
-        br
-        b Productivity
-        = " = Number of "
-        strong issues/week
-        = " normalised by the number of "
-        b people (High = good)
-        br
-        b Predictability
-        = " = Coefficient of Variance - StdDev of throughput / Mean of throughput "
-        b (Low = good)
-        br
-        b Velocity
-        = " = Number of "
-        strong points/week
-        = " normalised by the number of "
-        b people (High = good)
+        a(href="#", title="", data-tooltip-html-unsafe="{{'<b>Productivity</b> = Number of <strong>issues/week</strong> normalised by the number of people <b>(High = good)</b><br><b>Predictability</b> = Coefficient of Variance - StdDev of throughput / Mean of throughput <b>(Low = good)</b>'}}",  data-tooltip-placement="left") ? Help
+      rd-widget-body.medium.no-padding(loading="{{!graphData.predictabilityProductivity}}")
+        nvd3(options='options', data='graphData.predictabilityProductivity')
   .col-md-12
     br
     br

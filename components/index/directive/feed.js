@@ -6,7 +6,7 @@ angular
     .module('myApp')
     .directive('feed', feed);
 
-function feed($http,config, $sce) {
+function feed($http,config, $sce, $interval) {
     var directive = {
         scope: {
             src: '='
@@ -37,17 +37,29 @@ function feed($http,config, $sce) {
             return $sce.trustAsHtml(html);
           }
 
-          $http.get('api/xml?url=' + $scope.src).success(function(data) {
-            $scope.loading = false;
-            $scope.items = [];
+          function getFeed(url) {
+            console.log("Refreshing feed: " + url)
+            $http.get('api/xml?url=' + url).success(function(data) {
+              $scope.loading = false;
+              $scope.items = [];
 
-            var activity = x2js.xml_str2json(data);
+              var activity = x2js.xml_str2json(data);
 
-            _.each(activity.feed.entry, function(activity) {
-              $scope.items.push(activity);
-            });
+              _.each(activity.feed.entry, function(activity) {
+                $scope.items.push(activity);
+              });
+            }).error(function(e){ console.log(e);});
+          }
 
-          }).error(function(e){ console.log(e);});
+
+          var pollingPromise = $interval(function() {
+            getFeed($scope.src);
+          }, 5 * 60 * 1000);
+          getFeed($scope.src);
+
+          $scope.$on('$destroy', function() {
+            $interval.cancel(pollingPromise);
+          });
         }
     };
 
