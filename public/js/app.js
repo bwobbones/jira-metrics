@@ -28,6 +28,7 @@ angularModules.value('config', {
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
   completionTypes: ['Fixed'],
   slideTimeInSecs: 45,
+  updateTimeInMins: 10,
 });
 
 angularModules.constant('routes', [
