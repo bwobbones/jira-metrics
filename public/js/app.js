@@ -58,10 +58,11 @@ angularModules.constant('routes', [
     url: 'agile',
     icon: 'fa-tachometer'
   },
-      {
+  {
     name: 'Activity',
     url: 'activity',
     icon: 'fa-quote-right'
+  },
   {
     name: 'Jenkins',
     url: 'jenkins',

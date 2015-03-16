@@ -14,7 +14,10 @@ var restClient = new Client();
 // Extracted from .env
 var username = process.env.JIRA_USERNAME;
 var password = process.env.JIRA_PASSWORD;
-var auth = username ? 'Basic ' + new Buffer(username + ':' + password).toString('base64') : undefined;
+var auth;
+if(username) {
+  auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
+}
 
 function jiraPostRequest(res, jiraUrl, data, cacheTimeout) {
   var cacheKey = data.jql;
