@@ -49,7 +49,7 @@ block body
                   | JIRA Dashboard
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
-          div(ui-view="searchPanel", style="height:100%;")
+          div(ui-view="searchPanel", style="height:100%;", ng-controller='IndexCtrl')
 
   script(src='jquery/dist/jquery.js')
   script(src='angular/angular.js')
@@ -85,6 +85,7 @@ block body
 
   script(src='index/services/jira.service.js')
   script(src='index/services/stats.service.js')
+  script(src='index/services/jenkins.service.js')
   script(src='index/controller/masterController.js')
   script(src='index/controller/indexController.js')
   script(src='index/directive/throughput.js')

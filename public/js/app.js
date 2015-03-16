@@ -19,6 +19,7 @@ var angularModules = angular.module('myApp', [
 var jiraHostName = 'https://resourceful.atlassian.net';
 var confluenceHostName = 'https://resourceful.atlassian.net';
 var mercurialHostName = 'https://resourceful.atlassian.net';
+var jenkinsHostName = 'http://jenkins-ci.org/';
 
 angularModules.value('config', {
   jiraHostName: jiraHostName,
@@ -27,8 +28,23 @@ angularModules.value('config', {
   projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
   completionTypes: ['Fixed'],
+  jenkinsHostName: jenkinsHostName,
   slideTimeInSecs: 45,
   updateTimeInMins: 10,
+  agileColumns: [
+    {
+      name: 'TODO',
+      statuses: ['Open', 'Reopened', 'Awaiting Assignment', 'Inactive']
+    },
+    {
+      name: 'In Progress',
+      statuses: ['In Progress']
+    },
+    {
+      name: 'Done',
+      statuses: ['Closed', 'Resolved']
+    }
+  ],
 });
 
 angularModules.constant('routes', [
@@ -46,6 +62,11 @@ angularModules.constant('routes', [
     name: 'Activity',
     url: 'activity',
     icon: 'fa-quote-right'
+  {
+    name: 'Jenkins',
+    url: 'jenkins',
+    icon: 'fa-cube'
+  },
   },
 ]);
 

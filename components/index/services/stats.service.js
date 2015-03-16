@@ -4,7 +4,7 @@ appServices.factory('Statistics', function ($resource, config) {
     var data = [];
     var i = 0;
     _.each(periodWindows, function(periodWindow) {
-      var people = getPeople(periodWindow);
+      var people = getPeopleFromWindow(periodWindow);
       var weeklyThroughput = getWeeklyThroughput(periodWindow);
       var throughputArray = weeklyThroughput.counts;
       var productivity = calculateProductivity(throughputArray) / people.length;
@@ -107,26 +107,34 @@ appServices.factory('Statistics', function ($resource, config) {
     return windows;
   }
 
-  function getPeople(periodWindow) {
+  function getPeopleFromIssues(issues) {
 
     var people = [];
+    _.each(issues, function(issue) {
+      people.push(issue.fields.assignee);
+    });
 
+    return getUniquePeople(people);
+  }
+
+  function getPeopleFromWindow(periodWindow) {
+
+    var people = [];
     _.each(periodWindow, function(periodIssues) {
       _.each(periodIssues.issues, function(issue) {
         people.push(issue.fields.assignee);
       });
     });
 
+    return getUniquePeople(people);
+  }
+
+  function getUniquePeople(people) {
     var uniquePeople = _.map(_.groupBy(people,function(person){
       return person.name;
     }),function(grouped){
       return grouped[0];
     });
-
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_a_backlog"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_b_backlog"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "Wyvern CCB"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_implementation_pool"}));
 
     return uniquePeople;
   }
@@ -283,5 +291,6 @@ appServices.factory('Statistics', function ($resource, config) {
       generateBucketsFromIssues: generateBucketsFromIssues,
       generateStatsFromBuckets: generateStatsFromBuckets,
       generateGraphDataFromStat: generateGraphDataFromStat,
+      getPeopleFromIssues: getPeopleFromIssues,
   };
 });

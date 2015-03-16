@@ -7,14 +7,17 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, routes) {
       .state(route.name, {
         url: '/' + route.url + '?play',
         views: {
-          "searchPanel": {templateUrl: "partials/index/" + route.url, controller: IndexCtrl}
+          "searchPanel": {templateUrl: "partials/index/" + route.url}
         }
       })
   });
 });
 
-function IndexCtrl($scope, $rootScope, config, JIRA, Statistics, $interval) {
+function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkins, $interval, _, $http) {
   $scope.config = config;
+  $scope.filter = function(filterName, array, expression) {
+    return $filter(filterName)(array, expression);
+  }
 
   function runAndSchedule(task) {
     task();
@@ -27,7 +30,46 @@ function IndexCtrl($scope, $rootScope, config, JIRA, Statistics, $interval) {
         retrieverInterval = undefined;
       }
     });
+  };
+
+  $scope.buildResultStatusClass = function(build) {
+    var status = build.data.result;
+    var statusClass;
+    if(!build.data.building) {
+      if(status === 'SUCCESS') {
+        statusClass = 'label-success';
+      } else if (status === 'FAILURE') {
+        statusClass = 'label-danger';
+      } else if (status === 'UNSTABLE') {
+        statusClass = 'label-warning';
+      } else {
+        statusClass = 'label-info';
+      }
+    } else {
+      statusClass = 'label-primary';
+    }
+
+    return statusClass;
   }
+
+  $scope.addBuild = function (displayName, buildName) {
+    $scope.totalBuilds += 1;
+    var build = {
+      displayName: displayName
+    };
+
+    runAndSchedule(function () {
+      build.data = Jenkins.build(buildName).get();
+    });
+
+    $scope.builds.push(build);
+  };
+
+  $scope.builds = [];
+
+  runAndSchedule(function () {
+    $scope.weeklyCreatedJiras = JIRA.weeklyCreated.get();
+  });
 
   runAndSchedule(function () {
     $scope.currentSprintJiras = JIRA.currentSprint.get();
@@ -35,12 +77,22 @@ function IndexCtrl($scope, $rootScope, config, JIRA, Statistics, $interval) {
 
   runAndSchedule(function () {
     JIRA.throughputData.get(function (jiras) {
+      $scope.people = Statistics.getPeopleFromIssues(jiras.issues);
       $scope.weeklyBuckets = Statistics.generateBucketsFromIssues(jiras.issues);
       $scope.stats = Statistics.generateStatsFromBuckets($scope.weeklyBuckets);
-      $scope.stat = $scope.stats[$scope.stats.length - 1];
       $scope.graphData = Statistics.generateGraphDataFromStat($scope.stats);
     });
   });
+
+  $scope.listSubtasks = function(issue) {
+    var result = "";
+
+    _.each(issue.fields.subtasks, function(subtask){
+      result += subtask.fields.summary + "\n";
+    });
+
+    return result;
+  };
 
   $scope.performanceLoaded = function() {
     $scope.performanceFinishedLoading = true;
@@ -66,13 +118,7 @@ function IndexCtrl($scope, $rootScope, config, JIRA, Statistics, $interval) {
   $scope.options = {
       chart: {
           type: $scope.isBarchart ? 'lineChart' : 'multiBarChart',
-          height: 300,
-          margin : {
-              top: 20,
-              right: 20,
-              bottom: 40,
-              left: 55
-          },
+          height: 450,
           transitionDuration: 500,
           x: function(d) { return d.weekNumber; },
           y: function(d) { return d.value; },

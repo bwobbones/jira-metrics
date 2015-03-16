@@ -73,7 +73,7 @@ app.get('/api/allIssuesPerWeek/:weekNumber', function(req, res) {
   api.allIssuesPerWeek(req, res);
 });
 
-app.get('/api/issueDetails/:issueUrl', function(req, res) {
+app.get('/api/issueDetails', function(req, res) {
   api.issueDetail(req, res);
 });
 

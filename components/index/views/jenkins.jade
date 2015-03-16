@@ -1,0 +1,52 @@
+.row
+  .col-lg-6(ng-show="filter('buildStatus', builds, 'FAILURE').length > 0")
+    rd-widget
+      rd-widget-header(icon="fa-group", title="Failing Builds")
+      rd-widget-body.large.no-padding(loading="{{builds.length === 0}}")
+        h2(ng-show="failing.length > 0", ng-repeat="build in failing = (builds | buildStatus:'FAILURE')")
+          img(src="img/red.png")
+          .label(class="{{buildResultStatusClass(build)}}")
+            a(href="{{build.data.url}}", style="color: white !important;", target="_blank")
+              {{build.displayName + ' #' + build.data.number}} {{build.data.result}}
+
+  .col-lg-6(ng-show="filter('buildStatus', builds, 'UNSTABLE').length > 0")
+    rd-widget
+      rd-widget-header(icon="fa-group", title="Unstable Builds")
+      rd-widget-body.large.no-padding(loading="{{builds.length === 0}}")
+        h2(ng-show="unstable.length > 0", ng-repeat="build in unstable = (builds | buildStatus:'UNSTABLE')")
+          img(src="img/yellow.png")
+          .label(class="{{buildResultStatusClass(build)}}")
+            a(href="{{build.data.url}}", style="color: white !important;", target="_blank")
+              {{build.displayName + ' #' + build.data.number}} {{build.data.result}}
+
+.row
+  .col-lg-12
+    rd-widget
+      rd-widget-header(icon="fa-group", title="Jenkins Builds")
+      rd-widget-body.large.no-padding(loading="{{builds.length === 0}}")
+            .table-responsive
+              table.table.table-striped.table-bordered.table-hover
+                thead
+                  tr
+                    th Status
+                    th Build
+                    th Build Number
+                    th Date Built
+                    th Built On
+                  tbody
+                    tr(ng-repeat="build in builds")
+                      td
+                        img(src="img/green.png", ng-show="build.data.result === 'SUCCESS' && !build.data.building")
+                        img(src="img/green_anime.gif", ng-show="build.data.building")
+                        img(src="img/yellow.png", ng-show="build.data.result === 'UNSTABLE'")
+                        img(src="img/red.png", ng-show="build.data.result === 'FAILURE'")
+                        .label(class="{{buildResultStatusClass(build)}}") {{build.data.building ? 'Building' : build.data.result}}
+                      td
+                        a(href="{{build.data.url}}")
+                          {{build.displayName}}
+                      td
+                        a(href="{{build.data.url}}")
+                          {{'#' + build.data.number}}
+                      td {{build.data.timestamp | date:'medium'}}
+                      td
+                        {{build.data.builtOn}}

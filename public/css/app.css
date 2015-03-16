@@ -108,3 +108,7 @@ ul.sidebar .sidebar-list a.active {
   width:100% !important;
   height:96% !important;
 }
+
+.img-responsive {
+    margin: 0 auto;
+}
