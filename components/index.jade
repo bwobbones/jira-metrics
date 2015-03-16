@@ -49,10 +49,6 @@ block body
                   | JIRA Dashboard
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
-              br
-              timer(ng-class="{'hidden': !started}", autostart="false", interval="100", language="en")
-                .progress
-                  .progress-bar(style='width: {{(millis / 1000) * (100 / $parent.slideTimeInSecs) | number:0}}%;')
           div(ui-view="searchPanel", style="height:100%;")
 
   script(src='jquery/dist/jquery.js')
