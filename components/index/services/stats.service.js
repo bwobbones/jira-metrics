@@ -72,14 +72,17 @@ appServices.factory('Statistics', function ($resource, config) {
   }
 
   function createWeekBuckets() {
-    var endOfWeek = moment().endOf('week');
-    var startOfBuckets = moment(endOfWeek).subtract('23', 'weeks');
+    var numberOfWeeks = 23;
+
+    // The Graph should show up-to last week, except on Friday where it should include the current week.
+    // So we add 2 days to the current date before calculating the endOf the week
+    var endOfWeek = moment().add('2', 'days').endOf('week');
+    var startOfBucket = moment(endOfWeek).subtract(numberOfWeeks, 'weeks');
 
     var buckets = [];
-    var i = 0;
-    while(startOfBuckets.isBefore(endOfWeek)) {
-      buckets.push({i: i++, startDate: startOfBuckets.format('DD/MM/YYYY'), issues: []});
-      startOfBuckets.add('1', 'week');
+    for(var i = 0; i < numberOfWeeks; i++) {
+      buckets.push({i: i, startDate: startOfBucket.format('DD/MM/YYYY'), issues: []});
+      startOfBucket.add('1', 'week');
     }
     return buckets;
   }
