@@ -25,10 +25,10 @@ angularModules.value('config', {
   jiraHostName: jiraHostName,
   confluenceHostName: confluenceHostName,
   mercurialHostName: mercurialHostName,
+  jenkinsHostName: jenkinsHostName,
   projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
   completionTypes: ['Fixed'],
-  jenkinsHostName: jenkinsHostName,
   slideTimeInSecs: 45,
   updateTimeInMins: 10,
   agileColumns: [
