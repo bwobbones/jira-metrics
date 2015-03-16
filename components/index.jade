@@ -14,7 +14,7 @@ block body
             span NAVIGATION
 
           li.sidebar-list(ng-repeat="route in routes")
-            a(href='#/{{route.url}}', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
+            a(href='#/{{route.url}}?play={{play}}', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
               | {{route.name}}
               span.menu-icon.fa(class="{{route.icon}}")
 

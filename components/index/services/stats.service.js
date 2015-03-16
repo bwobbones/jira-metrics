@@ -84,7 +84,7 @@ appServices.factory('Statistics', function ($resource, config) {
     return buckets;
   }
 
-  function putIssuesInBuckets(issues, weekBuckets) {
+  function generateBucketsFromIssues(issues) {
     var weekBuckets = createWeekBuckets();
     _.each(issues, function(issue) {
       var resolutionDate = moment(issue.fields.resolutiondate.substr(0, 10), 'YYYY-MM-DD');
@@ -235,7 +235,7 @@ appServices.factory('Statistics', function ($resource, config) {
       throughputPeople: [
             {
                 values: throughputData,
-                key: 'Throughput',
+                key: 'JIRAs Resolved',
                 area: true
             },
             {
@@ -244,7 +244,7 @@ appServices.factory('Statistics', function ($resource, config) {
             },
             {
                 values: magnitudes,
-                key: 'Magnitude Completed',
+                key: 'Story Points Completed',
             },
           ],
 
@@ -272,14 +272,16 @@ appServices.factory('Statistics', function ($resource, config) {
     return (count == 1 ? one : many);
   }
 
+  function generateStatsFromBuckets(weeklyBuckets) {
+        var periodWindows = getPeriodWindows(weeklyBuckets);
+        var stats = generateStatsFromPeriodWindows(periodWindows);
+
+        return stats;
+      }
+
   return {
-      generateStatsFromIssues: function (issues) {
-        var weekBuckets = putIssuesInBuckets(issues);
-        var periodWindows = getPeriodWindows(weekBuckets);
-
-        return generateStatsFromPeriodWindows(periodWindows);
-      },
-
+      generateBucketsFromIssues: generateBucketsFromIssues,
+      generateStatsFromBuckets: generateStatsFromBuckets,
       generateGraphDataFromStat: generateGraphDataFromStat,
   };
 });

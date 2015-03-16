@@ -5,7 +5,7 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, routes) {
   angular.forEach(routes, function(route){
     $stateProvider
       .state(route.name, {
-        url: '/' + route.url,
+        url: '/' + route.url + '?play',
         views: {
           "searchPanel": {templateUrl: "partials/index/" + route.url, controller: IndexCtrl}
         }
@@ -13,19 +13,42 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, routes) {
   });
 });
 
-function IndexCtrl($scope, $rootScope, config, JIRA, Statistics) {
-
+function IndexCtrl($scope, $rootScope, config, JIRA, Statistics, $interval) {
   $scope.config = config;
 
-  $scope.currentSprintJiras = JIRA.currentSprint.get();
+  function runAndSchedule(task) {
+    task();
+    var retrieverInterval = $interval(task, config.updateTimeInMins * 60 * 1000);
 
-  $scope.allJiras = JIRA.throughputData.get(function (jiras) {
-    $scope.stats = Statistics.generateStatsFromIssues(jiras.issues);
-    $scope.stat = $scope.stats[$scope.stats.length - 1];
-    $scope.graphData = Statistics.generateGraphDataFromStat($scope.stats);
+    $scope.$on('$destroy', function() {
+      // Make sure that the interval is destroyed too
+      if (angular.isDefined(retrieverInterval)) {
+        $interval.cancel(retrieverInterval);
+        retrieverInterval = undefined;
+      }
+    });
+  }
 
-    $scope.loaded = true;
+  runAndSchedule(function () {
+    $scope.currentSprintJiras = JIRA.currentSprint.get();
   });
+
+  runAndSchedule(function () {
+    JIRA.throughputData.get(function (jiras) {
+      $scope.weeklyBuckets = Statistics.generateBucketsFromIssues(jiras.issues);
+      $scope.stats = Statistics.generateStatsFromBuckets($scope.weeklyBuckets);
+      $scope.stat = $scope.stats[$scope.stats.length - 1];
+      $scope.graphData = Statistics.generateGraphDataFromStat($scope.stats);
+    });
+  });
+
+  $scope.performanceLoaded = function() {
+    $scope.performanceFinishedLoading = true;
+  };
+
+  $scope.replicationLoaded = function() {
+    $scope.replicationFinishedLoading = true;
+  };
 
   $scope.isInt = function (n) {
     return n % 1 === 0;
