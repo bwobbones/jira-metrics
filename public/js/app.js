@@ -19,7 +19,7 @@ var angularModules = angular.module('myApp', [
 var jiraHostName = 'https://resourceful.atlassian.net';
 var confluenceHostName = 'https://resourceful.atlassian.net';
 var mercurialHostName = 'https://resourceful.atlassian.net';
-var jenkinsHostName = 'http://jenkins-ci.org/';
+var jenkinsHostName = 'https://builds.apache.org';
 
 angularModules.value('config', {
   jiraHostName: jiraHostName,

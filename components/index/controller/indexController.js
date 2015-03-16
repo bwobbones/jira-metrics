@@ -53,6 +53,8 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
   }
 
   $scope.addBuild = function (displayName, buildName) {
+    buildName = buildName || displayName;
+
     $scope.totalBuilds += 1;
     var build = {
       displayName: displayName
@@ -66,6 +68,11 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
   };
 
   $scope.builds = [];
+  $scope.addBuild('incubator-taverna-engine');
+  $scope.addBuild('AuroraBot');
+  $scope.addBuild('Hadoop-Mapreduce-trunk-Java8');
+  $scope.addBuild('Lucene-Artifacts-5.0');
+
 
   runAndSchedule(function () {
     $scope.weeklyCreatedJiras = JIRA.weeklyCreated.get();
