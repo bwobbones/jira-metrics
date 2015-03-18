@@ -22,6 +22,7 @@ var mercurialHostName = 'https://resourceful.atlassian.net';
 var jenkinsHostName = 'https://builds.apache.org';
 
 angularModules.value('config', {
+  title: 'Wyvern Dashboard',
   jiraHostName: jiraHostName,
   confluenceHostName: confluenceHostName,
   mercurialHostName: mercurialHostName,

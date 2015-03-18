@@ -2,7 +2,7 @@ extends layout
 
 block body
 
-  body(ng-controller='MasterCtrl')
+  body
     #page-wrapper(ng-class="{'open': toggle}", ng-cloak='')
       #sidebar-wrapper
         ul.sidebar
@@ -46,7 +46,7 @@ block body
                     i.fa.fa-pause(ng-show="slideshowPlaying", style="font-size: 2em;", ng-click='pauseSlideshow()', title="Pause Slideshow")
               .meta
                 .page
-                  | JIRA Dashboard
+                  | {{config.title}}
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
           div(ui-view="searchPanel", style="height:100%;", ng-controller='IndexCtrl')
