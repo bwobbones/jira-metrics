@@ -51,14 +51,21 @@ function feed($http,config, $sce, $interval) {
             }).error(function(e){ console.log(e);});
           }
 
+          function runAndSchedule(task) {
+            task();
+            var retrieverInterval = $interval(task, config.updateTimeInMins * 60 * 1000);
 
-          var pollingPromise = $interval(function() {
+            $scope.$on('$destroy', function() {
+              // Make sure that the interval is destroyed too
+              if (angular.isDefined(retrieverInterval)) {
+                $interval.cancel(retrieverInterval);
+                retrieverInterval = undefined;
+              }
+            });
+          };
+
+          runAndSchedule(function () {
             getFeed($scope.src);
-          }, 5 * 60 * 1000);
-          getFeed($scope.src);
-
-          $scope.$on('$destroy', function() {
-            $interval.cancel(pollingPromise);
           });
         }
     };
