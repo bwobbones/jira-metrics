@@ -183,4 +183,12 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
           }
       }
   };
+
+  // Disable nvd3 resize events
+  // See https://github.com/krispo/angular-nvd3/issues/18
+  window.nv.charts = {};
+  window.nv.graphs = [];
+  window.nv.logs = {};
+  // remove resize listeners
+  window.onresize = null;
 }
