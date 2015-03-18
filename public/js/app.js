@@ -64,6 +64,11 @@ angularModules.constant('routes', [
     icon: 'fa-quote-right'
   },
   {
+    name: 'JIRA',
+    url: 'jira',
+    icon: 'fa-child'
+  },
+  {
     name: 'Jenkins',
     url: 'jenkins',
     icon: 'fa-cube'

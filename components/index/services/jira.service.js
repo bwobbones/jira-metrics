@@ -38,5 +38,31 @@ appServices.factory('JIRA', function ($resource, config) {
                                     cache: true
                                 }
                          }),
+
+        created: $resource('api/searchSimple', {
+                              jiraHostName: config.jiraHostName,
+                              'projects[]': config.projects,
+                              issueTypes: config.issueTypes,
+                              search: 'created >= endOfWeek(-23)',
+                          },
+                          {
+                            get : {
+                                    method : 'GET',
+                                    cache: true
+                                }
+                         }),
+
+        resolved: $resource('api/searchSimple', {
+                              jiraHostName: config.jiraHostName,
+                              'projects[]': config.projects,
+                              issueTypes: config.issueTypes,
+                              search: 'resolutiondate >= endOfWeek(-23)',
+                          },
+                          {
+                            get : {
+                                    method : 'GET',
+                                    cache: true
+                                }
+                         }),
     };
 });

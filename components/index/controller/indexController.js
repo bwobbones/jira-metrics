@@ -13,7 +13,7 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, routes) {
   });
 });
 
-function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkins, $interval, _, $http) {
+function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkins, $interval, _, $http, $q) {
   $scope.config = config;
   $scope.filter = function(filterName, array, expression) {
     return $filter(filterName)(array, expression);
@@ -73,6 +73,27 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
   $scope.addBuild('Hadoop-Mapreduce-trunk-Java8');
   $scope.addBuild('Lucene-Artifacts-5.0');
 
+  function buildCreatedVsResolved() {
+    $scope.createdJiras = JIRA.created.get();
+    $scope.resolvedJiras = JIRA.resolved.get();
+
+    $q.all([
+      $scope.createdJiras.$promise,
+      $scope.resolvedJiras.$promise
+    ]).then(function() {
+        // Build created vs resolved chart here
+        var created = $scope.createdJiras.issues;
+        var resolved = $scope.resolvedJiras.issues;
+        console.log('Created: ' + created.length);
+        console.log('Resolved: ' + resolved.length);
+
+        var createdBuckets = Statistics.generateCreatedBucketsFromIssues(created);
+        var resolvedBuckets = Statistics.generateResolvedBucketsFromIssues(resolved);
+        $scope.createdVsResolvedData = Statistics.generateCreatedVsResolvedData(createdBuckets, resolvedBuckets);
+    });
+  }
+
+  buildCreatedVsResolved();
 
   runAndSchedule(function () {
     $scope.weeklyCreatedJiras = JIRA.weeklyCreated.get();
@@ -85,7 +106,7 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
   runAndSchedule(function () {
     JIRA.throughputData.get(function (jiras) {
       $scope.people = Statistics.getPeopleFromIssues(jiras.issues);
-      $scope.weeklyBuckets = Statistics.generateBucketsFromIssues(jiras.issues);
+      $scope.weeklyBuckets = Statistics.generateResolvedBucketsFromIssues(jiras.issues);
       $scope.stats = Statistics.generateStatsFromBuckets($scope.weeklyBuckets);
       $scope.graphData = Statistics.generateGraphDataFromStat($scope.stats);
     });
@@ -111,7 +132,7 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
 
   $scope.isInt = function (n) {
     return n % 1 === 0;
-  }
+  };
 
   $rootScope.$on('toggleBarChart', function(event, isBarchart){
     $scope.isBarchart = isBarchart;
@@ -122,7 +143,30 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
     }
   });
 
-  $scope.options = {
+  $scope.createdVsResolvedChartOptions = {
+      chart: {
+          type: 'lineChart',
+          height: 450,
+          transitionDuration: 500,
+          x: function(d) { return moment(d.week, "DD/MM/YYYY"); },
+          y: function(d) { return d.value; },
+          mean: function(d) { return d.value; },
+          useInteractiveGuideline: true,
+          xAxis: {
+              axisLabel: 'Week',
+              tickFormat: function(d) {
+                return moment(d).format("DD/MM/YYYY");
+              },
+               // staggerLabels: true,
+              showMaxMin: false,
+          },
+          yAxis: {
+            showMaxMin: false,
+          }
+      }
+  };
+
+  $scope.chartOptions = {
       chart: {
           type: $scope.isBarchart ? 'lineChart' : 'multiBarChart',
           height: 450,

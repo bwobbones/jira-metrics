@@ -87,10 +87,25 @@ appServices.factory('Statistics', function ($resource, config) {
     return buckets;
   }
 
-  function generateBucketsFromIssues(issues) {
+  function generateResolvedBucketsFromIssues(issues) {
     var weekBuckets = createWeekBuckets();
     _.each(issues, function(issue) {
       var resolutionDate = moment(issue.fields.resolutiondate.substr(0, 10), 'YYYY-MM-DD');
+      _.each(weekBuckets, function(bucket) {
+        if(resolutionDate.isAfter(moment(bucket.startDate, 'DD/MM/YYYY')) &&
+          resolutionDate.isBefore(moment(bucket.startDate, 'DD/MM/YYYY').add('1', 'week'))) {
+          bucket.issues.push(issue);
+        }
+      });
+    });
+
+    return weekBuckets;
+  }
+
+  function generateCreatedBucketsFromIssues(issues) {
+    var weekBuckets = createWeekBuckets();
+    _.each(issues, function(issue) {
+      var resolutionDate = moment(issue.fields.created.substr(0, 10), 'YYYY-MM-DD');
       _.each(weekBuckets, function(bucket) {
         if(resolutionDate.isAfter(moment(bucket.startDate, 'DD/MM/YYYY')) &&
           resolutionDate.isBefore(moment(bucket.startDate, 'DD/MM/YYYY').add('1', 'week'))) {
@@ -279,6 +294,46 @@ appServices.factory('Statistics', function ($resource, config) {
         };
   };
 
+  function generateCreatedVsResolvedData(createdBuckets, resolvedBuckets) {
+    var createdData = [];
+    var resolvedData = [];
+
+    function addBucketCountTo(data) {
+      var i = 0;
+      var previousValue = 0;
+      return function(bucket) {
+        var count = previousValue + bucket.issues.length;
+        previousValue = count;
+
+        var date =  bucket.startDate;
+        data.push({
+          week: date,
+          weekNumber: i++,
+          type: format(count, 'issue', 'issues'),
+          value: count
+        });
+      }
+    }
+
+    _.each(createdBuckets, addBucketCountTo(createdData));
+    _.each(resolvedBuckets, addBucketCountTo(resolvedData));
+
+    return [
+            {
+                values: createdData,
+                key: 'Created',
+                color: '#d62728',
+                //area: true
+            },
+            {
+                values: resolvedData,
+                key: 'Resolved',
+                color: '#2ca02c',
+                //area: true
+            },
+          ]
+  }
+
   function format(count, one, many) {
     return (count == 1 ? one : many);
   }
@@ -291,9 +346,11 @@ appServices.factory('Statistics', function ($resource, config) {
       }
 
   return {
-      generateBucketsFromIssues: generateBucketsFromIssues,
+      generateResolvedBucketsFromIssues: generateResolvedBucketsFromIssues,
+      generateCreatedBucketsFromIssues: generateCreatedBucketsFromIssues,
       generateStatsFromBuckets: generateStatsFromBuckets,
       generateGraphDataFromStat: generateGraphDataFromStat,
+      generateCreatedVsResolvedData: generateCreatedVsResolvedData,
       getPeopleFromIssues: getPeopleFromIssues,
   };
 });

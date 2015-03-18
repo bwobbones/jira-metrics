@@ -4,19 +4,19 @@
       rd-widget-header(icon="fa-group", title="Who's in this Week?")
         a(href="#") {{people.length}} People
       rd-widget-body.large.no-padding(loading="{{!people}}")
-        img.img-thumbnail(ng-repeat="person in people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
+        img.img-thumbnail(ng-repeat="person in people", ng-src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
 .row
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-bar-chart", title="JIRAs Resolved vs People vs Story Points")
       rd-widget-body.medium.no-padding(loading="{{!graphData.throughputPeople}}")
-        nvd3(options='options', data='graphData.throughputPeople')
+        nvd3(options='chartOptions', data='graphData.throughputPeople')
   .col-lg-6.col-md-12
     rd-widget(loading="{{!graphData.predictabilityProductivity}}")
       rd-widget-header(icon="fa-bar-chart", title="Predictability vs Productivity vs Velocity")
         a(href="#", title="", data-tooltip-html-unsafe="{{'<b>Productivity</b> = Number of <strong>issues/week</strong> normalised by the number of people <b>(High = good)</b><br><b>Predictability</b> = Coefficient of Variance - StdDev of throughput / Mean of throughput <b>(Low = good)</b>'}}",  data-tooltip-placement="left") ? Help
       rd-widget-body.medium.no-padding(loading="{{!graphData.predictabilityProductivity}}")
-        nvd3(options='options', data='graphData.predictabilityProductivity')
+        nvd3(options='chartOptions', data='graphData.predictabilityProductivity')
   .col-md-12
     br
     br
@@ -54,7 +54,7 @@
                       br
                       br
                       h5 {{stat.people.length}} People
-                      img.img-thumbnail(ng-repeat="person in stat.people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
+                      img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
                   td {{ stat.issueCount }}
                   td {{ stat.bugCount }}
 

@@ -68,22 +68,6 @@ exports.throughputData = function (req, res) {
   jiraPostRequest(res, hostname + '/rest/api/latest/search', data, DAY_IN_MILLIS);
 };
 
-exports.currentSprint = function (req, res) {
-
-  var hostname = req.query.jiraHostName;
-  var projects = req.query.projects;
-  var issueTypes = req.query.issueTypes;
-
-  var query = "project in (" + projects.join(',') + ") AND issuetype in (" + issueTypes.join(',') + ") AND Sprint in openSprints()";
-
-  var data = {
-    "jql": query,
-    "maxResults": 250
-  };
-
-  jiraPostRequest(res, hostname + '/rest/api/latest/search', data, HOUR_IN_MILLIS);
-};
-
 
 exports.allIssuesPerWeek = function (req, res) {
 
@@ -120,6 +104,24 @@ exports.search = function (req, res) {
   jiraPostRequest(res, hostname + '/rest/api/latest/search', data, HOUR_IN_MILLIS);
 };
 
+exports.searchSimple = function (req, res) {
+
+  var hostname = req.query.jiraHostName;
+  var projects = req.query.projects;
+  var issueTypes = req.query.issueTypes;
+  var search = req.query.search;
+
+  var query = 'project in (' + projects.join(",") + ') AND issuetype in (' + issueTypes.join(",") + ') AND (' + search + ')';
+
+  var data = {
+    "jql": query,
+    "fields": ["key", "resolutiondate", "created"],
+    "maxResults": 5000
+  };
+
+  jiraPostRequest(res, hostname + '/rest/api/latest/search', data, HOUR_IN_MILLIS);
+};
+
 exports.issueDetail = function (req, res) {
 
   var issueUrl = req.query.issueUrl || req.params["issueUrl"];
@@ -127,8 +129,6 @@ exports.issueDetail = function (req, res) {
   console.log(issueUrl);
   restClient.get(issueUrl, function (data, response) {
     res.json(data);
-  }, function(err) {
-    console.log(err);
   });
 };
 
