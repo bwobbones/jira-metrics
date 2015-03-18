@@ -99,9 +99,6 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
     $scope.weeklyCreatedJiras = JIRA.weeklyCreated.get();
   });
 
-  runAndSchedule(function () {
-    $scope.currentSprintJiras = JIRA.currentSprint.get();
-  });
 
   runAndSchedule(function () {
     JIRA.throughputData.get(function (jiras) {

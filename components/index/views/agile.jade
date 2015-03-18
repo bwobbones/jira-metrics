@@ -1,32 +1,7 @@
 .row
   .col-md-12
     rd-widget
-      rd-widget-header(icon="fa-group", title="Who's in this Week?")
-        a(href="#") {{people.length}} People
-      rd-widget-body.large.no-padding(loading="{{!people}}")
-        img.img-thumbnail(ng-repeat="person in people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
-  .col-md-12
-    rd-widget
       rd-widget-header(icon="fa-clock-o", title="Current Sprint")
-        {{currentSprintJiras.issues.length}} issues
-      rd-widget-body.medium.no-padding(loading="{{!currentSprintJiras.issues}}")
-        .row
-          .col-md-4(ng-repeat="column in config.agileColumns")
-            .table-responsive
-              table.table.table-striped.table-bordered.table-hover
-                thead
-                  tr
-                    th {{issues.length}} {{column.name}}
-                  tbody
-                    tr(ng-repeat="issue in issues = (currentSprintJiras.issues | statusIn:column.statuses)")
-                      td
-                        .row
-                          img.img-rounded.pull-right(src="{{issue.fields.assignee.avatarUrls.48x48}}", title="{{issue.fields.assignee.displayName}}", style="margin: 7px;")
-                          img(src="{{issue.fields.issueType.iconUrl}}", title="{{issue.fields.issueType.name}}", style="margin-right: 5px;")
-                          a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
-                          br
-                          img(src="{{issue.fields.priority.iconUrl}}", title="{{issue.fields.priority.name}}", style="margin-right: 5px;")
-                          {{ issue.fields.summary }}
-                        .row
-                          .badge(ng-show="issue.fields.customfield_10494", title="{{issue.fields.customfield_10494}} Story Points") {{issue.fields.customfield_10494}}
-                          .label.label-success.pull-right(ng-show="issue.fields.subtasks", title="{{listSubtasks(issue)}}") {{issue.fields.subtasks.length}} Subtasks
+        {{jiras.issues.length}} issues
+      rd-widget-body.medium.no-padding
+        agileboard(component="'Resource'", jiras="$parent.jiras")

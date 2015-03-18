@@ -13,18 +13,25 @@ appServices.factory('JIRA', function ($resource, config) {
                                 }
                          }),
 
-        currentSprint: $resource('api/currentSprint', {
+        currentSprint: function(component) {
+                          var search = 'Sprint in openSprints()';
+                          if(component) {
+                            search += ' AND component = "' + component + '"'
+                          }
+
+                          return $resource('api/search', {
                               jiraHostName: config.jiraHostName,
                               'projects[]': config.projects,
                               issueTypes: config.issueTypes,
-                              search: 'Sprint in openSprints()',
+                              search:  search,
                           },
                           {
                             get : {
                                     method : 'GET',
                                     cache: true
                                 }
-                         }),
+                         });
+                        },
 
         weeklyCreated: $resource('api/search', {
                               jiraHostName: config.jiraHostName,
