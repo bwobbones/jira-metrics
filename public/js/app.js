@@ -74,7 +74,6 @@ angularModules.constant('routes', [
     url: 'jenkins',
     icon: 'fa-cube'
   },
-  },
 ]);
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
