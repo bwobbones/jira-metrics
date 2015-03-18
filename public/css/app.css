@@ -112,3 +112,13 @@ ul.sidebar .sidebar-list a.active {
 .img-responsive {
     margin: 0 auto;
 }
+
+.no-padding {
+  padding: 0px;
+}
+
+.widget .widget-body {
+  padding: 0px !important;
+  padding-top: 10px !important;
+  padding-bottom: 5px !important;
+}
