@@ -27,8 +27,26 @@ angularModules.value('config', {
   projects: ["'Resource'"],
   issueTypes: ['Bug', '"New Feature"', 'Improvement', 'Technical', 'Task'],
   completionTypes: ['Fixed'],
-  slideTimeInSecs: 8,
+  slideTimeInSecs: 45,
 });
+
+angularModules.constant('routes', [
+  {
+    name: 'Metrics',
+    url: 'metrics',
+    icon: 'fa-bar-chart'
+  },
+  {
+    name: 'Agile',
+    url: 'agile',
+    icon: 'fa-tachometer'
+  },
+      {
+    name: 'Activity',
+    url: 'activity',
+    icon: 'fa-quote-right'
+  },
+]);
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode(true);

@@ -13,18 +13,11 @@ block body
           li.sidebar-title
             span NAVIGATION
 
-          li.sidebar-list
-            a(href='#/metrics', ng-class="{ active: isActive('/metrics') }")
-              | Metrics
-              span.menu-icon.fa.fa-bar-chart
-          li.sidebar-list
-            a(href='#/agile', ng-class="{ active: isActive('/agile') }")
-              | Agile
-              span.menu-icon.fa.fa-tachometer
-          li.sidebar-list
-            a(href='#/activity', ng-class="{ active: isActive('/activity') }")
-              | Activity
-              span.menu-icon.fa.fa-comment-o
+          li.sidebar-list(ng-repeat="route in routes")
+            a(href='#/{{route.url}}', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
+              | {{route.name}}
+              span.menu-icon.fa(class="{{route.icon}}")
+
         .sidebar-footer
           .col-xs-3
             a(href='{{config.jiraHostName}}/secure/Dashboard.jspa', target='_blank')
@@ -94,6 +87,8 @@ block body
   script(src='js/filters.js')
   script(src='js/directives.js')
 
+  script(src='index/services/jira.service.js')
+  script(src='index/services/stats.service.js')
   script(src='index/controller/masterController.js')
   script(src='index/controller/indexController.js')
   script(src='index/directive/throughput.js')
