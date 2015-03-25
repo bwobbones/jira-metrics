@@ -2,3 +2,5 @@
 node_modules/
 .hg/
 .env
+public/img/avatars/
+public/img/performance/
