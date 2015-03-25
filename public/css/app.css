@@ -122,3 +122,18 @@ ul.sidebar .sidebar-list a.active {
   padding-top: 10px !important;
   padding-bottom: 5px !important;
 }
+
+.dim {
+  color: rgb(124, 124, 124);
+}
+
+.full {
+  width: 100%;
+  height: 100%;
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+.center {
+  text-align: center;
+}

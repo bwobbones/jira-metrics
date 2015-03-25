@@ -1,28 +1,43 @@
 .row
   .col-lg-6.col-md-12
     rd-widget
-      rd-widget-header(icon="fa-clock-o", title="Weekly Created")
-        {{weeklyCreatedJiras.issues.length}} issues
-      rd-widget-body.medium.no-padding(loading="{{!weeklyCreatedJiras.issues}}")
+      rd-widget-header(icon="fa-clock-o", title="Unfinished JIRAs")
+        {{unfinishedJiras.issues.length}} issues
+      rd-widget-body.medium.no-padding(loading="{{!unfinishedJiras.issues}}")
+        .row(ng-hide="unfinishedJiras.issues.length > 0")
+          .col-md-12
+            h4 No issues found.
         .row
           .col-md-12
             .table-responsive
               table.table.table-striped.table-bordered.table-hover
                   tbody
-                    tr(ng-repeat="issue in issues = (weeklyCreatedJiras.issues)")
+                    tr(ng-repeat="jira in issues = (unfinishedJiras.issues | orderBy:'fields.updated':true)")
                       td
-                        .row
-                          img.img-rounded.pull-right(ng-src="{{issue.fields.assignee.avatarUrls.48x48}}", title="{{issue.fields.assignee.displayName}}", style="margin: 7px;")
-                          img(ng-src="{{issue.fields.issueType.iconUrl}}", title="{{issue.fields.issueType.name}}", style="margin-right: 5px;")
-                          a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target="_blank") {{ issue.key }}
-                          br
-                          img(ng-src="{{issue.fields.priority.iconUrl}}", title="{{issue.fields.priority.name}}", style="margin-right: 5px;")
-                          {{ issue.fields.summary }}
-                        .row
-                          .badge(ng-show="issue.fields.customfield_10494", title="{{issue.fields.customfield_10494}} Story Points") {{issue.fields.customfield_10494}}
-                          .label.label-success.pull-right(ng-show="issue.fields.subtasks", title="{{listSubtasks(issue)}}") {{issue.fields.subtasks.length}} Subtasks
+                        issue(jira="jira")
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-bar-chart", title="Created Vs Resolved")
+        a(ng-click="toggleFullScreen(createdVsResolvedChartOptions)", title="Expand to Fullscreen")
+          i.fa.fa-expand
       rd-widget-body.medium.no-padding(loading="{{!createdVsResolvedData}}")
-        nvd3(options='createdVsResolvedChartOptions', data='createdVsResolvedData')
+        .full(id="createdVsResolved", fullscreen="createdVsResolvedChartOptions.fullscreen", only-watched-property)
+          h3.center(ng-hide="!createdVsResolvedChartOptions.fullscreen") Created Vs Resolved
+          .full(style="height: 95%")
+            nvd3(options='createdVsResolvedChartOptions', data='createdVsResolvedData')
+  .col-lg-6.col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-clock-o", title="Daily Created")
+        {{dailyCreatedJiras.issues.length}} issues
+      rd-widget-body.medium.no-padding(loading="{{!dailyCreatedJiras.issues}}")
+        .row(ng-hide="dailyCreatedJiras.issues.length > 0")
+          .col-md-12
+            h4 No issues found.
+        .row
+          .col-md-12
+            .table-responsive
+              table.table.table-striped.table-bordered.table-hover
+                  tbody
+                    tr(ng-repeat="jira in issues = (dailyCreatedJiras.issues | orderBy:'fields.updated':true)")
+                      td
+                        issue(jira="jira")

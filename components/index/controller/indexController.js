@@ -12,9 +12,33 @@ angularModules.config(function ($stateProvider, $urlRouterProvider, routes) {
       })
   });
 });
+angular.module('myApp')
+    .controller('IndexCtrl', ['$scope', '$rootScope', '$filter', 'config', 'JIRA', 'Statistics', 'Jenkins', '$interval', '_', '$http', '$q', 'Fullscreen', IndexCtrl]);
 
-function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkins, $interval, _, $http, $q) {
+function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkins, $interval, _, $http, $q,Fullscreen) {
   $scope.config = config;
+
+  $scope.toggleFullScreen = function(chartOptions) {
+      chartOptions.fullscreen = !chartOptions.fullscreen;
+      chartOptions.chart.height = chartOptions.fullscreen ? null : 450;
+  }
+
+
+  Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled) {
+    function handleFullscreen(chartOptions, isFullscreenEnabled){
+      if(isFullscreenEnabled) {
+        chartOptions.chart.height = null;
+        chartOptions.fullscreen = true;
+      } else {
+        chartOptions.chart.height = 450;
+        chartOptions.fullscreen = false;
+      }
+    }
+
+    handleFullscreen($scope.chartOptions);
+    handleFullscreen($scope.createdVsResolvedChartOptions);
+  });
+
   $scope.filter = function(filterName, array, expression) {
     return $filter(filterName)(array, expression);
   }
@@ -93,12 +117,9 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
     });
   }
 
-  buildCreatedVsResolved();
-
   runAndSchedule(function () {
-    $scope.weeklyCreatedJiras = JIRA.weeklyCreated.get();
+    $scope.dailyCreatedJiras = JIRA.dailyCreated.get();
   });
-
 
   runAndSchedule(function () {
     JIRA.throughputData.get(function (jiras) {
@@ -109,15 +130,12 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
     });
   });
 
-  $scope.listSubtasks = function(issue) {
-    var result = "";
+  buildCreatedVsResolved();
 
-    _.each(issue.fields.subtasks, function(subtask){
-      result += subtask.fields.summary + "\n";
-    });
+  runAndSchedule(function () {
+    $scope.unfinishedJiras = JIRA.unfinishedJIRAs.get();
+  });
 
-    return result;
-  };
 
   $scope.performanceLoaded = function() {
     $scope.performanceFinishedLoading = true;
@@ -131,7 +149,7 @@ function IndexCtrl($scope, $rootScope, $filter, config, JIRA, Statistics, Jenkin
     return n % 1 === 0;
   };
 
-  $rootScope.$on('toggleBarChart', function(event, isBarchart){
+  $rootScope.$on('toggleBarChart', function(event, isBarchart) {
     $scope.isBarchart = isBarchart;
     if(isBarchart) {
       $scope.options.chart.type = 'lineChart';

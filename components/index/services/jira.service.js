@@ -33,11 +33,11 @@ appServices.factory('JIRA', function ($resource, config) {
                          });
                         },
 
-        weeklyCreated: $resource('api/search', {
+        dailyCreated: $resource('api/search', {
                               jiraHostName: config.jiraHostName,
                               'projects[]': config.projects,
                               issueTypes: config.issueTypes,
-                              search: 'created >= "-7d 1h"',
+                              search: 'created >= "-1d 1h"',
                           },
                           {
                             get : {
@@ -64,6 +64,17 @@ appServices.factory('JIRA', function ($resource, config) {
                               'projects[]': config.projects,
                               issueTypes: config.issueTypes,
                               search: 'resolutiondate >= endOfWeek(-23)',
+                          },
+                          {
+                            get : {
+                                    method : 'GET',
+                                    cache: true
+                                }
+                         }),
+
+        unfinishedJIRAs: $resource('api/unfinished', {
+                              jiraHostName: config.jiraHostName,
+                              'projects[]': config.projects
                           },
                           {
                             get : {

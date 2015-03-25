@@ -14,6 +14,9 @@ var angularModules = angular.module('myApp', [
   'RDash',
   'ngSanitize',
   'timer',
+  'angular.filter',
+  'angularMoment',
+  'FBAngular',
 ]);
 
 var jiraHostName = 'https://resourceful.atlassian.net';
@@ -22,7 +25,7 @@ var mercurialHostName = 'https://resourceful.atlassian.net';
 var jenkinsHostName = 'https://builds.apache.org';
 
 angularModules.value('config', {
-  title: 'Wyvern Dashboard',
+  title: 'Metrics Dashboard',
   jiraHostName: jiraHostName,
   confluenceHostName: confluenceHostName,
   mercurialHostName: mercurialHostName,
@@ -78,4 +81,8 @@ angularModules.constant('routes', [
 
 angularModules.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
+});
+
+angularModules.run(function(amMoment) {
+    amMoment.changeLocale('en');
 });

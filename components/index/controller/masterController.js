@@ -15,8 +15,14 @@ function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, config,
 
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
         $scope.play = toParams.play === 'true';
-        if(toParams.play === 'true' && !$scope.slideshowPlaying) {
-            $scope.runSlideshow();
+        if($scope.play) {
+            if(!$scope.slideshowPlaying) {
+                $scope.runSlideshow();
+            }
+        } else {
+            if($scope.slideshowPlaying) {
+                $scope.pauseSlideshow();
+            }
         }
     });
 

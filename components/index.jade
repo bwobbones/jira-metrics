@@ -14,7 +14,7 @@ block body
             span NAVIGATION
 
           li.sidebar-list(ng-repeat="route in routes")
-            a(href='#/{{route.url}}?play={{play}}', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
+            a(href='#/{{route.url}}?play=false', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
               | {{route.name}}
               span.menu-icon.fa(class="{{route.icon}}")
 
@@ -68,6 +68,9 @@ block body
   script(src='humanize-duration/humanize-duration.js')
   script(src='angular-timer/app/js/timer.js')
   script(src='angular-timer/app/js/i18nService.js')
+  script(src='angular-filter/dist/angular-filter.min.js')
+  script(src='angular-moment/angular-moment.js')
+  script(src='angular-fullscreen/src/angular-fullscreen.js')
 
   script(src='js/xml2json.js')
 
@@ -80,6 +83,7 @@ block body
   script(src='js/app.js')
   script(src='index/directive/feed.js')
   script(src='agileboard/directive/agileboard.js')
+  script(src='issue/directive/issue.js')
   script(src='js/services.js')
   script(src='js/filters.js')
   script(src='js/directives.js')

@@ -15,7 +15,7 @@ function agileboard() {
         transclude: true,
         templateUrl: '/partials/agileboard/agileboard',
         restrict: 'EA',
-        controller: function($scope, JIRA, config, $interval) {
+        controller: function($scope, JIRA, config, $interval, $filter) {
           $scope.config = config;
           $scope.loading = true;
 
@@ -35,7 +35,7 @@ function agileboard() {
           function getJiras(component) {
             console.log("Refreshing Agile board: " + component);
 
-            $scope.jiras = JIRA.currentSprint(component).get(function() {
+            $scope.jiras = JIRA.currentSprint(component).get(function(jiras) {
               $scope.loading = false;
             });
           }

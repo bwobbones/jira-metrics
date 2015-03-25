@@ -59,4 +59,24 @@ angular.module('myApp.filters', []).
       return result;
     };
   }]
+)
+
+.filter('taskStatusNot', ['_', function (_) {
+    return function (tasks, status, status2) {
+      var result = [];
+      if(tasks) {
+        _.each(tasks, function(task) {
+          if(task.fields.status.name !== status) {
+            if(!status2 || task.fields.status.name !== status2) {
+              result.push(task);
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
+      return result;
+    };
+  }]
 );

@@ -12,10 +12,11 @@ var DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
 var restClient = new Client();
 
 // Extracted from .env
+var auth = process.env.JIRA_AUTH;
 var username = process.env.JIRA_USERNAME;
 var password = process.env.JIRA_PASSWORD;
-var auth;
-if(username) {
+
+if(!auth && username) {
   auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
 }
 
@@ -39,8 +40,8 @@ function jiraPostRequest(res, jiraUrl, data, cacheTimeout) {
 
   var cachedData = cache.get(cacheKey);
   if(cachedData) {
-    console.log('Using cache for ' + cacheKey);
-    res.status(304).json(cachedData);
+    console.log('Using cache for "' + cacheKey + '"');
+    res.json(cachedData);
     return;
   }
 
@@ -62,6 +63,7 @@ exports.throughputData = function (req, res) {
 
   var data = {
     "jql": query,
+    "fields": ["key", "issuetype", "assignee", "created", "resolutiondate", "customfield_10494"],
     "maxResults": 250
   };
 
@@ -120,6 +122,23 @@ exports.searchSimple = function (req, res) {
   };
 
   jiraPostRequest(res, hostname + '/rest/api/latest/search', data, HOUR_IN_MILLIS);
+};
+
+exports.unfinished = function (req, res) {
+
+  var hostname = req.query.jiraHostName;
+  var projects = req.query.projects;
+  var issueTypes = req.query.issueTypes;
+  var search = req.query.search;
+
+  var query = 'issue in parentIssuesFromQuery("project = Resource AND type = \\"Code Review Sub-Task\\" AND resolution != Rejected") AND resolution = Unresolved AND (sprint is EMPTY OR sprint not in openSprints())';
+
+  var data = {
+    "jql": query,
+    "maxResults": 5000
+  };
+
+  jiraPostRequest(res, hostname + '/rest/api/latest/search', data, DAY_IN_MILLIS);
 };
 
 exports.issueDetail = function (req, res) {

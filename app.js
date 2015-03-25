@@ -69,6 +69,10 @@ app.get('/api/searchSimple', function(req, res) {
   api.searchSimple(req, res);
 });
 
+app.get('/api/unfinished', function(req, res) {
+  api.unfinished(req, res);
+});
+
 app.get('/api/allIssuesPerWeek/:weekNumber', function(req, res) {
   api.allIssuesPerWeek(req, res);
 });
