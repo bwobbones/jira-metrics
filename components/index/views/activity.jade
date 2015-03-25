@@ -4,7 +4,7 @@
       rd-widget-header(icon="fa-group", title="Who's in this Week?")
         a(href="#") {{stat.people.length}} People
       rd-widget-body.large.no-padding(loading="{{!stat}}")
-        img.img-thumbnail(ng-repeat="person in stat.people", src="{{person.avatarUrls.48x48}}", title="{{person.displayName}}")
+        img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-comment-o", title="Activity Stream")
