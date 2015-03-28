@@ -2,87 +2,96 @@
   .col-md-12
     rd-widget
       rd-widget-header(icon="fa-group", title="Who's in this Week?")
-        a(href="#") {{stat.people.length}} People
-      rd-widget-body.large.no-padding(loading="{{!stat}}")
-        img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
+        a(href="#") {{people.length}} People
+      rd-widget-body.large.no-padding(loading="{{!people}}")
+        img.img-thumbnail(ng-repeat="person in people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
+.row
   .col-lg-6.col-md-12
     rd-widget
-      rd-widget-header(icon="fa-bar-chart", title="Throughput vs People vs Magnitude")
+      rd-widget-header(icon="fa-bar-chart", title="JIRAs Resolved vs People vs Story Points")
+        a(ng-click="toggleFullScreen(chartOptions)", title="Expand to Fullscreen")
+          i.fa.fa-expand
       rd-widget-body.medium.no-padding(loading="{{!graphData.throughputPeople}}")
-        nvd3(options='options', data='graphData.throughputPeople')
+        .full(id="throughput", fullscreen="chartOptions.fullscreen", only-watched-property)
+          h3.center(ng-hide="!chartOptions.fullscreen") JIRAs Resolved vs People vs Story Points
+          .full(style="height: 95%")
+            nvd3(options='chartOptions', data='graphData.throughputPeople')
   .col-lg-6.col-md-12
     rd-widget(loading="{{!graphData.predictabilityProductivity}}")
       rd-widget-header(icon="fa-bar-chart", title="Predictability vs Productivity vs Velocity")
         a(href="#", title="", data-tooltip-html-unsafe="{{'<b>Productivity</b> = Number of <strong>issues/week</strong> normalised by the number of people <b>(High = good)</b><br><b>Predictability</b> = Coefficient of Variance - StdDev of throughput / Mean of throughput <b>(Low = good)</b>'}}",  data-tooltip-placement="left") ? Help
       rd-widget-body.medium.no-padding(loading="{{!graphData.predictabilityProductivity}}")
-        nvd3(options='options', data='graphData.predictabilityProductivity')
+        nvd3(options='chartOptions', data='graphData.predictabilityProductivity')
   .col-md-12
     br
     br
-.row(ng-show="loaded")
+.row
   .col-md-12
-    .table-responsive
-      table.table.table-striped.table-bordered
-        thead
-          tr
-            th Period Ending
-            th Throughput
-            th People
-            th Total/Average/Std Dev
-            th Productivity
-            th Predictability
-            th Show People
-            th Issue Count
-            th Bug Count
-          tbody
-            tr(ng-repeat="stat in stats | orderBy:'i':true")
-              td {{ stat.week }}
-              td
-                throughput(id="{{stat.identifier}}", ng-attr-width="250", ng-attr-height="100")
-              td {{ stat.people.length }}
-              td {{ stat.total }} / {{ stat.average}} / {{ stat.stddev }}
-              td {{ stat.productivity }}
-              td {{ stat.predictability }}
-              td
-                .col-md-2
-                  button.btn.btn-default.btn-small(ng-click="isCollapsed = !isCollapsed") People
-                .col-md-10(ng-show="isCollapsed")
-                  br
-                  br
-                  h5 {{stat.people.length}} People
-                  img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
-              td {{ stat.issueCount }}
-              td {{ stat.bugCount }}
+    rd-widget
+      rd-widget-header(icon="fa-bar-chart", title="Weekly Breakdown")
+      rd-widget-body.medium.no-padding(loading="{{!stats}}")
+        .table-responsive
+          table.table.table-striped.table-bordered
+            thead
+              tr
+                th Period Ending
+                th Throughput
+                th People
+                th Total/Average/Std Dev
+                th Productivity
+                th Predictability
+                th Show People
+                th Issue Count
+                th Bug Count
+              tbody
+                tr(ng-repeat="stat in stats | orderBy:'i':true")
+                  td {{ stat.week }}
+                  td
+                    throughput(id="{{stat.identifier}}", ng-attr-width="250", ng-attr-height="100")
+                  td {{ stat.people.length }}
+                  td {{ stat.total }} / {{ stat.average}} / {{ stat.stddev }}
+                  td {{ stat.productivity }}
+                  td {{ stat.predictability }}
+                  td
+                    .col-md-2
+                      button.btn.btn-default.btn-small(ng-click="isCollapsed = !isCollapsed") People
+                    .col-md-10(ng-show="isCollapsed")
+                      br
+                      br
+                      h5 {{stat.people.length}} People
+                      img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
+                  td {{ stat.issueCount }}
+                  td {{ stat.bugCount }}
 
-.row(ng-show="loaded")
-  .col-md-2
-    button.btn.btn-default.btn-small(ng-click="sourceCollapsed = !sourceCollapsed") Source
-  .col-md-10(ng-show="sourceCollapsed")
-    h3 Source Data
-    p Number of issues completed each week
-    .table-responsive
-      table.table.table-striped.table-bordered
-        thead
-          tr
-            th Start Date
-            th Issues Completed
-            th Source
-          tbody
-            tr(ng-repeat="key in weekBuckets | orderBy:'i':true")
-              td {{ key.startDate }}
-              td {{ key.issues.length }}
-              td
-                .col-md-2
-                  button.btn.btn-default.btn-small(ng-click="issueCollapsed = !issueCollapsed") Issues
-                .col-md-10
-                  .table-responsive(ng-show="issueCollapsed")
-                    table.table.table-striped.table-bordered.table-hover
-                      thead
-                        tr
-                          th Key
-                          th Issue Type
-                        tbody
-                          tr(ng-repeat="issue in key.issues")
-                            td
-                              a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}') {{ issue.key }}
-                            td {{ issue.fields.issuetype.name }}
+    .row(ng-show="stats")
+      .col-md-2
+        button.btn.btn-default.btn-small(ng-click="sourceCollapsed = !sourceCollapsed") Source
+      .col-md-10(ng-show="sourceCollapsed")
+        h3 Source Data
+        p Number of issues completed each week
+        .table-responsive
+          table.table.table-striped.table-bordered
+            thead
+              tr
+                th Start Date
+                th Issues Completed
+                th Source
+              tbody
+                tr(ng-repeat="key in weeklyBuckets | orderBy:'i':true")
+                  td {{ key.startDate }}
+                  td {{ key.issues.length }}
+                  td
+                    .col-md-2
+                      button.btn.btn-default.btn-small(ng-click="issueCollapsed = !issueCollapsed") Issues
+                    .col-md-10
+                      .table-responsive(ng-show="issueCollapsed")
+                        table.table.table-striped.table-bordered.table-hover
+                          thead
+                            tr
+                              th Key
+                              th Issue Type
+                            tbody
+                              tr(ng-repeat="issue in key.issues")
+                                td
+                                  a(href='http://jira.is3.c4isr.adi-limited.com:8080/browse/{{ issue.key }}') {{ issue.key }}
+                                td {{ issue.fields.issuetype.name }}

@@ -1,0 +1,14 @@
+.row
+  img.img-rounded.pull-right(ng-src="{{issue.fields.assignee.avatarUrls['48x48']}}", title='{{issue.fields.assignee.displayName}}', style='margin: 7px; width: 35px;')
+  img(ng-src='{{issue.fields.issueType.iconUrl}}', title='{{issue.fields.issueType.name}}', style='margin-right: 5px;')
+  a(href='{{config.jiraHostName}}/browse/{{ issue.key }}', target='_blank') {{ issue.key }}
+  .pull-right.dim(style="margin-right:20px", title="{{issue.fields.updated | date:'medium'}}") Last updated {{issue.fields.updated | amTimeAgo}}
+  br
+  img(ng-src='{{issue.fields.priority.iconUrl}}', title='{{issue.fields.priority.name}}', style='margin-right: 5px;')
+  | {{ issue.fields.summary }}
+.row(ng-show="issue.fields.subtasks || issue.fields.customfield_10494")
+  br
+  a(ng-repeat="(type, tasks) in issue.fields.subtasks | taskStatusNot:'Review/Test Passed':'Review/Test Closed' | groupBy: 'fields.issuetype.name'", ng-href="{{config.jiraHostName + '/browse/' + (tasks | first).key}}", style="color: white;")
+    .label(class='{{typeLabelClass(type)}}', ng-show='issue.fields.subtasks', title='{{listSubtasks(tasks)}}', style='margin-right: 5px;')
+      {{formatSubtaskTitle(type, tasks)}}
+  .badge.pull-right(ng-show='issue.fields.customfield_10494', title='{{issue.fields.customfield_10494}} Story Points', style='margin-right: 5px;') {{issue.fields.customfield_10494}}

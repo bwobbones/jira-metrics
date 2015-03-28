@@ -2,9 +2,9 @@
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-group", title="Who's in this Week?")
-        a(href="#") {{stat.people.length}} People
-      rd-widget-body.large.no-padding(loading="{{!stat}}")
-        img.img-thumbnail(ng-repeat="person in stat.people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
+        a(href="#") {{people.length}} People
+      rd-widget-body.large.no-padding(loading="{{!people}}")
+        img.img-thumbnail(ng-repeat="person in people", ng-src="{{person.avatarUrls['48x48']}}", title="{{person.displayName}}")
   .col-lg-6.col-md-12
     rd-widget
       rd-widget-header(icon="fa-comment-o", title="Activity Stream")

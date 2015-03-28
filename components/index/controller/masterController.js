@@ -12,33 +12,36 @@ String.prototype.capitalizeFirstLetter = function() {
 function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, config, $timeout, routes, _) {
     $scope.slideTimeInSecs = config.slideTimeInSecs;
     $scope.routes = routes;
-    $scope.startTimer = function() {
-      $scope.started = true;
-      document.getElementsByTagName('timer')[0].start();
-    }
 
-    $scope.stopTimer = function() {
-      $scope.started = false;
-      document.getElementsByTagName('timer')[0].clear();
-    };
-
-    $scope.restartTimer = function() {
-        $scope.stopTimer();
-        $scope.startTimer();
-    }
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+        $scope.play = toParams.play === 'true';
+        if($scope.play) {
+            if(!$scope.slideshowPlaying) {
+                $scope.runSlideshow();
+            }
+        } else {
+            if($scope.slideshowPlaying) {
+                $scope.pauseSlideshow();
+            }
+        }
+    });
 
     $scope.slideshowPlaying = null;
 
     $scope.pauseSlideshow = function() {
+        $location.search({play: false});
         if($scope.slideshowPlaying) {
             $timeout.cancel($scope.slideshowPlaying);
         }
 
-        $scope.stopTimer();
         $scope.slideshowPlaying = null;
     };
 
     $scope.startSlideshow = function() {
+        $location.search({play: true});
+    };
+
+    $scope.runSlideshow = function() {
         var pages = [];
         _.each(routes, function(route) {
             pages.push('/' + route.url);
@@ -46,7 +49,6 @@ function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, config,
 
         var slideTime = $scope.slideTimeInSecs * 1000;
         var gotoNextPage = function() {
-            $scope.restartTimer();
             if(!$scope.slideshowPlaying) {
                 return;
             }
@@ -55,12 +57,16 @@ function MasterCtrl($scope, $cookieStore, $rootScope, $location, $state, config,
             if(currentPageIndex > -1) {
                 var nextPageIndex = (currentPageIndex + 1) % pages.length;
                 var nextPage = pages[nextPageIndex];
-                $location.path(nextPage);
+                console.log('going to next page: ' + nextPage);
+
+                // Navigate to next page
+                $location.path(nextPage).search({play: true});
+
+                // Schedule next page change
                 $scope.slideshowPlaying = $timeout(gotoNextPage, slideTime);
             }
         };
 
-        $scope.startTimer();
         $scope.slideshowPlaying = $timeout(gotoNextPage, slideTime);
     };
 

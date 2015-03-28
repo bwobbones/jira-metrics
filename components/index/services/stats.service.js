@@ -4,7 +4,7 @@ appServices.factory('Statistics', function ($resource, config) {
     var data = [];
     var i = 0;
     _.each(periodWindows, function(periodWindow) {
-      var people = getPeople(periodWindow);
+      var people = getPeopleFromWindow(periodWindow);
       var weeklyThroughput = getWeeklyThroughput(periodWindow);
       var throughputArray = weeklyThroughput.counts;
       var productivity = calculateProductivity(throughputArray) / people.length;
@@ -72,22 +72,40 @@ appServices.factory('Statistics', function ($resource, config) {
   }
 
   function createWeekBuckets() {
-    var endOfWeek = moment().endOf('week');
-    var startOfBuckets = moment(endOfWeek).subtract('23', 'weeks');
+    var numberOfWeeks = 23;
+
+    // The Graph should show up-to last week, except on Friday where it should include the current week.
+    // So we add 2 days to the current date before calculating the endOf the week
+    var endOfWeek = moment().add('2', 'days').endOf('week');
+    var startOfBucket = moment(endOfWeek).subtract(numberOfWeeks, 'weeks');
 
     var buckets = [];
-    var i = 0;
-    while(startOfBuckets.isBefore(endOfWeek)) {
-      buckets.push({i: i++, startDate: startOfBuckets.format('DD/MM/YYYY'), issues: []});
-      startOfBuckets.add('1', 'week');
+    for(var i = 0; i < numberOfWeeks; i++) {
+      buckets.push({i: i, startDate: startOfBucket.format('DD/MM/YYYY'), issues: []});
+      startOfBucket.add('1', 'week');
     }
     return buckets;
   }
 
-  function putIssuesInBuckets(issues, weekBuckets) {
+  function generateResolvedBucketsFromIssues(issues) {
     var weekBuckets = createWeekBuckets();
     _.each(issues, function(issue) {
       var resolutionDate = moment(issue.fields.resolutiondate.substr(0, 10), 'YYYY-MM-DD');
+      _.each(weekBuckets, function(bucket) {
+        if(resolutionDate.isAfter(moment(bucket.startDate, 'DD/MM/YYYY')) &&
+          resolutionDate.isBefore(moment(bucket.startDate, 'DD/MM/YYYY').add('1', 'week'))) {
+          bucket.issues.push(issue);
+        }
+      });
+    });
+
+    return weekBuckets;
+  }
+
+  function generateCreatedBucketsFromIssues(issues) {
+    var weekBuckets = createWeekBuckets();
+    _.each(issues, function(issue) {
+      var resolutionDate = moment(issue.fields.created.substr(0, 10), 'YYYY-MM-DD');
       _.each(weekBuckets, function(bucket) {
         if(resolutionDate.isAfter(moment(bucket.startDate, 'DD/MM/YYYY')) &&
           resolutionDate.isBefore(moment(bucket.startDate, 'DD/MM/YYYY').add('1', 'week'))) {
@@ -107,26 +125,34 @@ appServices.factory('Statistics', function ($resource, config) {
     return windows;
   }
 
-  function getPeople(periodWindow) {
+  function getPeopleFromIssues(issues) {
 
     var people = [];
+    _.each(issues, function(issue) {
+      people.push(issue.fields.assignee);
+    });
 
+    return getUniquePeople(people);
+  }
+
+  function getPeopleFromWindow(periodWindow) {
+
+    var people = [];
     _.each(periodWindow, function(periodIssues) {
       _.each(periodIssues.issues, function(issue) {
         people.push(issue.fields.assignee);
       });
     });
 
+    return getUniquePeople(people);
+  }
+
+  function getUniquePeople(people) {
     var uniquePeople = _.map(_.groupBy(people,function(person){
       return person.name;
     }),function(grouped){
       return grouped[0];
     });
-
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_a_backlog"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_team_b_backlog"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "Wyvern CCB"}));
-    uniquePeople = _.without(uniquePeople, _.findWhere(uniquePeople, {displayName: "wyvern_implementation_pool"}));
 
     return uniquePeople;
   }
@@ -235,7 +261,7 @@ appServices.factory('Statistics', function ($resource, config) {
       throughputPeople: [
             {
                 values: throughputData,
-                key: 'Throughput',
+                key: 'JIRAs Resolved',
                 area: true
             },
             {
@@ -244,7 +270,7 @@ appServices.factory('Statistics', function ($resource, config) {
             },
             {
                 values: magnitudes,
-                key: 'Magnitude Completed',
+                key: 'Story Points Completed',
             },
           ],
 
@@ -268,18 +294,63 @@ appServices.factory('Statistics', function ($resource, config) {
         };
   };
 
+  function generateCreatedVsResolvedData(createdBuckets, resolvedBuckets) {
+    var createdData = [];
+    var resolvedData = [];
+
+    function addBucketCountTo(data) {
+      var i = 0;
+      var previousValue = 0;
+      return function(bucket) {
+        var count = previousValue + bucket.issues.length;
+        previousValue = count;
+
+        var date =  bucket.startDate;
+        data.push({
+          week: date,
+          weekNumber: i++,
+          type: format(count, 'issue', 'issues'),
+          value: count
+        });
+      }
+    }
+
+    _.each(createdBuckets, addBucketCountTo(createdData));
+    _.each(resolvedBuckets, addBucketCountTo(resolvedData));
+
+    return [
+            {
+                values: createdData,
+                key: 'Created',
+                color: '#d62728',
+                //area: true
+            },
+            {
+                values: resolvedData,
+                key: 'Resolved',
+                color: '#2ca02c',
+                //area: true
+            },
+          ]
+  }
+
   function format(count, one, many) {
     return (count == 1 ? one : many);
   }
 
+  function generateStatsFromBuckets(weeklyBuckets) {
+        var periodWindows = getPeriodWindows(weeklyBuckets);
+        var stats = generateStatsFromPeriodWindows(periodWindows);
+
+        return stats;
+      }
+
   return {
-      generateStatsFromIssues: function (issues) {
-        var weekBuckets = putIssuesInBuckets(issues);
-        var periodWindows = getPeriodWindows(weekBuckets);
-
-        return generateStatsFromPeriodWindows(periodWindows);
-      },
-
+      generateResolvedBucketsFromIssues: generateResolvedBucketsFromIssues,
+      generateCreatedBucketsFromIssues: generateCreatedBucketsFromIssues,
+      generateStatsFromBuckets: generateStatsFromBuckets,
       generateGraphDataFromStat: generateGraphDataFromStat,
+      generateCreatedVsResolvedData: generateCreatedVsResolvedData,
+      getPeopleFromIssues: getPeopleFromIssues,
   };
 });

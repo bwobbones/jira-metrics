@@ -57,10 +57,6 @@ app.get('/api/throughputData', function(req, res) {
   api.throughputData(req, res);
 });
 
-app.get('/api/currentSprint', function(req, res) {
-  api.currentSprint(req, res);
-});
-
 app.get('/api/xml', function(req, res) {
   api.xml(req, res);
 });
@@ -69,11 +65,19 @@ app.get('/api/search', function(req, res) {
   api.search(req, res);
 });
 
+app.get('/api/searchSimple', function(req, res) {
+  api.searchSimple(req, res);
+});
+
+app.get('/api/unfinished', function(req, res) {
+  api.unfinished(req, res);
+});
+
 app.get('/api/allIssuesPerWeek/:weekNumber', function(req, res) {
   api.allIssuesPerWeek(req, res);
 });
 
-app.get('/api/issueDetails/:issueUrl', function(req, res) {
+app.get('/api/issueDetails', function(req, res) {
   api.issueDetail(req, res);
 });
 

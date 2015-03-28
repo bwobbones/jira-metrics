@@ -1,10 +1,12 @@
 !!!
-html(ng-app="myApp")
+html(ng-app="myApp", ng-controller='MasterCtrl')
   head
     meta(charset='utf8')
     meta(name="viewport", content="width=device-width, initial-scale=1")
+    // Refresh page every 12 hours (12 * 60 * 60 seconds)
+    meta(http-equiv="refresh", content="43200")
     base(href='/')
-    title Jira Metrics
+    title(ng-bind="config.title") Dashboard
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.css')
     link(rel='stylesheet', href='font-awesome/css/font-awesome.min.css')
     link(rel='stylesheet', href='/css/app.css')

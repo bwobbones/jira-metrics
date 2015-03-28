@@ -1,0 +1,43 @@
+.row
+  .col-lg-6.col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-clock-o", title="Unfinished JIRAs")
+        {{unfinishedJiras.issues.length}} issues
+      rd-widget-body.medium.no-padding(loading="{{!unfinishedJiras.issues}}")
+        .row(ng-hide="unfinishedJiras.issues.length > 0")
+          .col-md-12
+            h4 No issues found.
+        .row
+          .col-md-12
+            .table-responsive
+              table.table.table-striped.table-bordered.table-hover
+                  tbody
+                    tr(ng-repeat="jira in issues = (unfinishedJiras.issues | orderBy:'fields.updated':true)")
+                      td
+                        issue(jira="jira")
+  .col-lg-6.col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-bar-chart", title="Created Vs Resolved")
+        a(ng-click="toggleFullScreen(createdVsResolvedChartOptions)", title="Expand to Fullscreen")
+          i.fa.fa-expand
+      rd-widget-body.medium.no-padding(loading="{{!createdVsResolvedData}}")
+        .full(id="createdVsResolved", fullscreen="createdVsResolvedChartOptions.fullscreen", only-watched-property)
+          h3.center(ng-hide="!createdVsResolvedChartOptions.fullscreen") Created Vs Resolved
+          .full(style="height: 95%")
+            nvd3(options='createdVsResolvedChartOptions', data='createdVsResolvedData')
+  .col-lg-6.col-md-12
+    rd-widget
+      rd-widget-header(icon="fa-clock-o", title="Daily Created")
+        {{dailyCreatedJiras.issues.length}} issues
+      rd-widget-body.medium.no-padding(loading="{{!dailyCreatedJiras.issues}}")
+        .row(ng-hide="dailyCreatedJiras.issues.length > 0")
+          .col-md-12
+            h4 No issues found.
+        .row
+          .col-md-12
+            .table-responsive
+              table.table.table-striped.table-bordered.table-hover
+                  tbody
+                    tr(ng-repeat="jira in issues = (dailyCreatedJiras.issues | orderBy:'fields.updated':true)")
+                      td
+                        issue(jira="jira")

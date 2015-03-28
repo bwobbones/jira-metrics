@@ -1,0 +1,12 @@
+rd-loading(ng-show='loading')
+.row(ng-hide='loading', style="margin-bottom: -20px;")
+  .col-md-4(ng-repeat='column in config.agileColumns')
+    .table-responsive
+      table.table.table-striped.table-bordered.table-hover
+        thead
+          tr
+            th {{issues.length}} {{column.name}}
+          tbody
+            tr(ng-repeat="jira in issues = (jiras.issues | statusIn:column.statuses | orderBy:'fields.updated':true)")
+              td
+                issue(jira="jira")

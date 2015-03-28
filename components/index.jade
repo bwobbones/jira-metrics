@@ -2,7 +2,7 @@ extends layout
 
 block body
 
-  body(ng-controller='MasterCtrl')
+  body
     #page-wrapper(ng-class="{'open': toggle}", ng-cloak='')
       #sidebar-wrapper
         ul.sidebar
@@ -14,7 +14,7 @@ block body
             span NAVIGATION
 
           li.sidebar-list(ng-repeat="route in routes")
-            a(href='#/{{route.url}}', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
+            a(href='#/{{route.url}}?play=false', ng-class="{ active: isActive('/' + route.url) }", title="{{route.name}}")
               | {{route.name}}
               span.menu-icon.fa(class="{{route.icon}}")
 
@@ -46,14 +46,10 @@ block body
                     i.fa.fa-pause(ng-show="slideshowPlaying", style="font-size: 2em;", ng-click='pauseSlideshow()', title="Pause Slideshow")
               .meta
                 .page
-                  | JIRA Dashboard
+                  | {{config.title}}
                 .breadcrumb-links
                   | Home / {{capitalizeFirstLetter(state.current.name)}}
-              br
-              timer(ng-class="{'hidden': !started}", autostart="false", interval="100", language="en")
-                .progress
-                  .progress-bar(style='width: {{(millis / 1000) * (100 / $parent.slideTimeInSecs) | number:0}}%;')
-          div(ui-view="searchPanel", style="height:100%;")
+          div(ui-view="searchPanel", style="height:100%;", ng-controller='IndexCtrl')
 
   script(src='jquery/dist/jquery.js')
   script(src='angular/angular.js')
@@ -72,6 +68,9 @@ block body
   script(src='humanize-duration/humanize-duration.js')
   script(src='angular-timer/dist/angular-timer.js')
   script(src='angular-timer/app/js/i18nService.js')
+  script(src='angular-filter/dist/angular-filter.min.js')
+  script(src='angular-moment/angular-moment.js')
+  script(src='angular-fullscreen/src/angular-fullscreen.js')
 
   script(src='js/xml2json.js')
 
@@ -83,12 +82,15 @@ block body
 
   script(src='js/app.js')
   script(src='index/directive/feed.js')
+  script(src='agileboard/directive/agileboard.js')
+  script(src='issue/directive/issue.js')
   script(src='js/services.js')
   script(src='js/filters.js')
   script(src='js/directives.js')
 
   script(src='index/services/jira.service.js')
   script(src='index/services/stats.service.js')
+  script(src='index/services/jenkins.service.js')
   script(src='index/controller/masterController.js')
   script(src='index/controller/indexController.js')
   script(src='index/directive/throughput.js')
